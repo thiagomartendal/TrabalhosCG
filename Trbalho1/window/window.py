@@ -6,7 +6,7 @@ class Window():
     __Y2 = 0
 
     # Define as coordenadas
-    def setCoordenadas(self, x, y):
+    def setDimensao(self, largura, altura):
         self.__X1 = -1*x
         self.__Y1 = -1*y
         self.__X2 = x
