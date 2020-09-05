@@ -35,7 +35,7 @@ class Janela(QWidget):
     # Definição da window para o sistema gráfico interativo
     def __definirWindow(self):
         screen = QDesktopWidget().screenGeometry()
-        self.__window.setCoordenadas(screen.width(), screen.height())
+        self.__window.setDimensao(screen.width(), screen.height())
 
     # Barra de Menu
     def __barraMenu(self):
