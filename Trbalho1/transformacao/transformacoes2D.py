@@ -6,9 +6,7 @@ class Transformacoes2D():
     # Translada o objeto dado uma distancia x, y
     def transladar(self, objeto, x, y):
         matT = self.__gerarMatrizTranslacao(x, y)
-        # aplico a todos os pontos do objeto
-        pontos = objeto.getPontos()
-        objeto.setPontosFixos(self.__aplicarPontosMat(matT, pontos))
+        self.__aplicarMatObj(matT, objeto)
 
     # Escalona o objeto por um coeficiente sX, sY
     def escalonarCentro(self, objeto, sX, sY):
@@ -16,10 +14,8 @@ class Transformacoes2D():
         matTransParaOrigem = self.__gerarMatrizTranslacao(-centro[0], -centro[1])
         matEscalonamento = self.__gerarMatrizEscalonamento(sX, sY)
         matTransDeVolta = self.__gerarMatrizTranslacao(centro[0], centro[1])
-        matResult = self.__matrizResultante([matTransParaOrigem, matEscalonamento, matTransDeVolta])
-        # aplico a todos os pontos do objeto
-        pontos = objeto.getPontos()
-        objeto.setPontosFixos(self.__aplicarPontosMat(matResult, pontos))
+        matResult = self.__calcularMatrizResultante([matTransParaOrigem, matEscalonamento, matTransDeVolta])
+        self.__aplicarMatObj(matResult, objeto)
 
     # Rotaciona o objeto ao redor do seu centro por determinados graus
     def rotacionarCentroObjeto(self, objeto, graus):
@@ -36,10 +32,8 @@ class Transformacoes2D():
         matTransParaPonto = self.__gerarMatrizTranslacao(-ponto[0], -ponto[1])
         matRotacao = self.__gerarMatrizRotacao(graus)
         matTransDeVolta = self.__gerarMatrizTranslacao(ponto[0], ponto[1])
-        matResult = self.__matrizResultante([matTransParaPonto, matRotacao, matTransDeVolta])
-        # aplico a todos os pontos do objeto
-        pontos = objeto.getPontosFixos()
-        objeto.setPontosFixos(self.__aplicarPontosMat(matResult, pontos))
+        matResult = self.__calcularMatrizResultante([matTransParaPonto, matRotacao, matTransDeVolta])
+        self.__aplicarMatObj(matResult, objeto)
 
     # Retorna uma matriz 3x3 de translacao para x, y
     def __gerarMatrizTranslacao(self, x, y):
@@ -61,18 +55,19 @@ class Transformacoes2D():
                 [0, 0, 1]]
 
     # Retorna a matriz resultante da multiplicacao da lista
-    def __matrizResultante(self, matrizes):
+    def __calcularMatrizResultante(self, matrizes):
         resultante = matrizes.pop(0)
         for mat in matrizes:
             resultante = matmul(resultante, mat)
         return resultante
 
-    # Retorna lista com os pontos apos aplicados a matriz
-    def __aplicarPontosMat(self, mat, pontos):
+    # Todos os pontos do objeto sao multiplicados pela matriz
+    def __aplicarMatObj(self, mat, objeto):
+        pontos = objeto.getPontosFixos()
         novosPontos = []
         for i in range(1, len(pontos), 2):
             p = [pontos[i-1], pontos[i], 1]
             novoP = matmul(p, mat)
             novosPontos.append(novoP[0])
             novosPontos.append(novoP[1])
-        return novosPontos
+        objeto.setPontosFixos(novosPontos)
