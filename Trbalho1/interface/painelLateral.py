@@ -10,6 +10,7 @@ class PainelLateral(QScrollArea):
         self.__propriedades()
         self.__lista()
         self.__controlesWindow()
+        self.__transformacoes2D()
 
     # Primeiras definições do painel lateral
     def __propriedades(self):
@@ -34,7 +35,7 @@ class PainelLateral(QScrollArea):
 
     # Definição dos botões de controle da window
     def __botoesWindow(self):
-        self.__botoesControleWindow = [QPushButton("In"), QPushButton("Out"), QPushButton("Up"), QPushButton("Left"), QPushButton("Right"), QPushButton("Down")]
+        self.__botoesControleWindow = [QPushButton("In"), QPushButton("Out"), QPushButton("Up"), QPushButton("Left"), QPushButton("Right"), QPushButton("Down"), QPushButton("Rotacionar")]
         self.__botoesControleWindow[0].setFixedWidth(45)
         self.__botoesControleWindow[1].setFixedWidth(45)
         self.__botoesControleWindow[2].setFixedWidth(45)
@@ -64,6 +65,23 @@ class PainelLateral(QScrollArea):
         layoutPainel.addWidget(self.__botoesControleWindow[3], 2, 0)
         layoutPainel.addWidget(self.__botoesControleWindow[4], 2, 2)
         layoutPainel.addWidget(self.__botoesControleWindow[5], 3, 1)
+        layout.addWidget(painel)
+        self.__layoutPrincipal.addWidget(grupo)
+
+    # Componentes da tela para controlar a rotacao
+    def __transformacoes2D(self):
+        layout = QVBoxLayout()
+        grupo = QGroupBox()
+        grupo.setTitle("Rotacoes")
+        grupo.setLayout(layout)
+        layoutPainel = QGridLayout()
+        painel = QFrame()
+        painel.setLayout(layoutPainel)
+        #layoutPainel.addWidget(QLabel("Graus"), 0, 0)
+        #self.__entradaGraus = QLineEdit()
+        #self.__entradaGraus.setReadOnly(False)
+        #layoutPainel.addWidget(self.__entradaGraus, 0, 1, 1, 3)
+        layoutPainel.addWidget(self.__botoesControleWindow[6], 1, 3)
         layout.addWidget(painel)
         self.__layoutPrincipal.addWidget(grupo)
 

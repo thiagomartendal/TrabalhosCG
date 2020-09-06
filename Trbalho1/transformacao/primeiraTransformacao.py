@@ -32,13 +32,13 @@ class PrimeiraTransformacao():
 
     # Operação de zoomIn na window
     def zoomIn(self):
-        self.__window.setX2(self.__coordenadasW[2]-100)
-        self.__window.setY2(self.__coordenadasW[3]-100)
+        self.__window.setX2(self.__coordenadasW[2]*0.7)
+        self.__window.setY2(self.__coordenadasW[3]*0.7)
 
     # Operação de zoomOut na window
     def zoomOut(self):
-        self.__window.setX2(self.__coordenadasW[2]+100)
-        self.__window.setY2(self.__coordenadasW[3]+100)
+        self.__window.setX2(self.__coordenadasW[2]*1.3)
+        self.__window.setY2(self.__coordenadasW[3]*1.3)
 
     # Move a window para cima
     def up(self):

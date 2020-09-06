@@ -19,6 +19,11 @@ class Objeto(ABC):
     def desenhar(self, cena):
         pass
 
+    # Atualiza a lista de pontos fixos
+    def setPontosFixos(self, novosPontos):
+        self.__pontosFixos.clear()
+        self.__pontosFixos = [float(p) for p in novosPontos]
+
     # Atualiza a lista de pontos
     def setPontos(self, novosPontos):
         self.__pontos.clear()
@@ -40,3 +45,13 @@ class Objeto(ABC):
     @abstractmethod
     def tipo(self):
         pass
+
+    # Retorna o vetor [x, y] da média dos pontos
+    def getMediaPontosFixos(self):
+        mediaX = 0
+        mediaY = 0
+        for i in range(1, len(self.__pontosFixos), 2):
+            mediaX += self.__pontosFixos[i-1]
+            mediaY += self.__pontosFixos[i]
+        return [mediaX*2/len(self.__pontosFixos), mediaY*2/len(self.__pontosFixos)]
+

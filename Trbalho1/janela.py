@@ -11,6 +11,7 @@ from interface.menu import *
 from objeto.poligono import *
 import sys
 import math
+from transformacao.transformacoes2D import *
 
 class Janela(QWidget):
     __layoutVertical = QVBoxLayout() # Layout Principal vertical
@@ -82,6 +83,7 @@ class Janela(QWidget):
         self.__painelL.getBotoesWindow()[3].clicked.connect(lambda: self.__left())
         self.__painelL.getBotoesWindow()[4].clicked.connect(lambda: self.__right())
         self.__painelL.getBotoesWindow()[5].clicked.connect(lambda: self.__down())
+        self.__painelL.getBotoesWindow()[6].clicked.connect(lambda: self.__rotate())
 
     # Cada um dos métodos abaixo deve ter uma instancia propria de PrimeiraTransformacao, para atualizar os dados
     # Função para chamada de zoomIn
@@ -126,3 +128,11 @@ class Janela(QWidget):
     def __painelViewport(self):
         self.__viewport = Viewport(self.__window)
         self.__layoutHorizontal.addWidget(self.__viewport)
+
+    # funcao para rotacionar 15 graus
+    def __rotate(self):
+        t2d = Transformacoes2D()
+        for obj in self.__objetos:
+            t2d.rotacionarCentroObjeto(obj, 15)
+            #t2d.rotacionarCentroMundo(obj, 15)
+        self.__viewport.renderizar(self.__objetos)
