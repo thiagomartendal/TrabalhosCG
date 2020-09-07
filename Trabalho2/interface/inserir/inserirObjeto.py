@@ -66,29 +66,29 @@ class InserirObjeto(QDialog):
             tmpC = self.__coordenadas[0].text().split(' ')
         else:
             tmpC = self.__coordenadas
-        pontos = []
-        for i in range(0, len(tmpC)):
-            if i % 2 != 0:
-                str1 = tmpC[i-1] if self.__tipo == 0 else tmpC[i-1].text()
-                str2 = tmpC[i] if self.__tipo == 0 else tmpC[i].text()
-                p = EstruturaPonto(float(str1), float(str2))
-                pontos.append(p)
-                i+1
-        tmpC.clear()
-        if self.__tipo == 0:
-            if len(pontos) % 2 == 0:
+        if len(tmpC) % 2 != 0:
+            QMessageBox.question(self, 'Atenção', 'Digite um número par de coordenadas para formar os pontos.', QMessageBox.Ok)
+        else:
+            pontos = []
+            for i in range(0, len(tmpC)):
+                if i % 2 != 0:
+                    str1 = tmpC[i-1] if self.__tipo == 0 else tmpC[i-1].text()
+                    str2 = tmpC[i] if self.__tipo == 0 else tmpC[i].text()
+                    p = EstruturaPonto(float(str1), float(str2))
+                    pontos.append(p)
+                    i+1
+            tmpC.clear()
+            if self.__tipo == 0:
                 self.__objeto = Poligono(nome, pontos)
                 self.__sinalBotao = 0
-            else:
-                QMessageBox.question(self, 'Atenção', 'Digite um número par de coordenadas para formar os pontos.', QMessageBox.Ok)
-        elif self.__tipo == 1:
-            self.__objeto = Linha(nome, pontos)
-            self.__sinalBotao = 0
-        if self.__tipo == 2:
-            self.__objeto = Ponto(nome, pontos)
-            self.__sinalBotao = 0
-        if self.__sinalBotao == 0:
-            self.hide()
+            elif self.__tipo == 1:
+                self.__objeto = Linha(nome, pontos)
+                self.__sinalBotao = 0
+            if self.__tipo == 2:
+                self.__objeto = Ponto(nome, pontos)
+                self.__sinalBotao = 0
+            if self.__sinalBotao == 0:
+                self.hide()
 
     # Ação do botão Cancelar
     def __cancelar(self):
