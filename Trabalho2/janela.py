@@ -11,6 +11,7 @@ from interface.menu import *
 from objeto.poligono import *
 from transformacao.primeiraTransformacao import *
 from transformacao.segundaTransformacao import *
+from transformacao.normalizacao import *
 import sys
 import math
 
@@ -38,6 +39,7 @@ class Janela(QWidget):
     def __definirWindow(self):
         screen = QDesktopWidget().screenGeometry()
         self.__window.setDimensao(screen.width(), screen.height())
+        # self.__window.setDimensao(2000, 2000)
 
     # Barra de Menu
     def __barraMenu(self):
@@ -52,7 +54,9 @@ class Janela(QWidget):
         inserirPoligono = InserirObjeto(0)
         inserirPoligono.exec_()
         if inserirPoligono.getSinal() == 0:
-            self.__objetos.append(inserirPoligono.getObj())
+            objeto = inserirPoligono.getObj()
+            Normalizacao(objeto, self.__window.coordenadas()[2], self.__window.coordenadas()[3], self.__window.centro())
+            self.__objetos.append(objeto)
             self.__viewport.renderizar(self.__objetos)
             self.__painelL.atualizarLista(self.__objetos)
 
@@ -61,7 +65,9 @@ class Janela(QWidget):
         inserirLinha = InserirObjeto(1)
         inserirLinha.exec_()
         if inserirLinha.getSinal() == 0:
-            self.__objetos.append(inserirLinha.getObj())
+            objeto = inserirLinha.getObj()
+            Normalizacao(objeto, self.__window.coordenadas()[2], self.__window.coordenadas()[3])
+            self.__objetos.append(objeto)
             self.__viewport.renderizar(self.__objetos)
             self.__painelL.atualizarLista(self.__objetos)
 
@@ -70,7 +76,9 @@ class Janela(QWidget):
         inserirPonto = InserirObjeto(2)
         inserirPonto.exec_()
         if inserirPonto.getSinal() == 0:
-            self.__objetos.append(inserirPonto.getObj())
+            objeto = inserirPonto.getObj()
+            Normalizacao(objeto, self.__window.coordenadas()[2], self.__window.coordenadas()[3])
+            self.__objetos.append()
             self.__viewport.renderizar(self.__objetos)
             self.__painelL.atualizarLista(self.__objetos)
 
