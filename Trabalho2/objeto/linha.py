@@ -10,8 +10,9 @@ class Linha(Objeto):
 
     # Desenha o objeto
     def desenhar(self, cena):
+        cor = QColor(self.getCor()[0], self.getCor()[1], self.getCor()[2])
         linha = QLineF(self.getPontos()[0].X(), self.getPontos()[0].Y(), self.getPontos()[1].X(), self.getPontos()[1].Y()) # dois pontos
-        cena().scene().addLine(linha, QPen(QColor(0, 0, 0), 1, Qt.SolidLine))
+        cena().scene().addLine(linha, QPen(cor, 1, Qt.SolidLine))
 
     # Retorna o tipo físico do objeto
     def tipo(self):

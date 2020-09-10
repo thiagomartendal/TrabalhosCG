@@ -34,12 +34,13 @@ class Janela(QWidget):
         painel = QFrame();
         painel.setLayout(self.__layoutHorizontal)
         self.__layoutVertical.addWidget(painel)
+        self.__renderizar()
 
     # Definição da window para o sistema gráfico interativo
     def __definirWindow(self):
         screen = QDesktopWidget().screenGeometry()
-        self.__window.setDimensao(screen.width(), screen.height())
-        # self.__window.setDimensao(2000, 2000)
+        self.__window.setDimensao(screen.width(), screen.width())
+        #self.__window.setDimensao(1000, 1000)
 
     # Barra de Menu
     def __barraMenu(self):
@@ -55,9 +56,8 @@ class Janela(QWidget):
         inserirPoligono.exec_()
         if inserirPoligono.getSinal() == 0:
             objeto = inserirPoligono.getObj()
-            Normalizacao(objeto, self.__window.coordenadas()[2], self.__window.coordenadas()[3], self.__window.centro())
             self.__objetos.append(objeto)
-            self.__viewport.renderizar(self.__objetos)
+            self.__renderizar()
             self.__painelL.atualizarLista(self.__objetos)
 
     # Dialogo para inserção de linha
@@ -66,9 +66,8 @@ class Janela(QWidget):
         inserirLinha.exec_()
         if inserirLinha.getSinal() == 0:
             objeto = inserirLinha.getObj()
-            Normalizacao(objeto, self.__window.coordenadas()[2], self.__window.coordenadas()[3])
             self.__objetos.append(objeto)
-            self.__viewport.renderizar(self.__objetos)
+            self.__renderizar()
             self.__painelL.atualizarLista(self.__objetos)
 
     # Dialogo para inserção de ponto
@@ -77,9 +76,8 @@ class Janela(QWidget):
         inserirPonto.exec_()
         if inserirPonto.getSinal() == 0:
             objeto = inserirPonto.getObj()
-            Normalizacao(objeto, self.__window.coordenadas()[2], self.__window.coordenadas()[3])
-            self.__objetos.append()
-            self.__viewport.renderizar(self.__objetos)
+            self.__objetos.append(objeto)
+            self.__renderizar()
             self.__painelL.atualizarLista(self.__objetos)
 
     # Menu lateral de propriedades
@@ -104,39 +102,39 @@ class Janela(QWidget):
     def __zoomIn(self):
         p = PrimeiraTransformacao(self.__objetos, self.__window, self.__viewport.coordenadas())
         p.zoomIn()
-        self.__viewport.renderizar(self.__objetos)
+        self.__renderizar()
         self.__painelL.setZoom(10)
 
     # Função para chamada de zoomOut
     def __zoomOut(self):
         p = PrimeiraTransformacao(self.__objetos, self.__window, self.__viewport.coordenadas())
         p.zoomOut()
-        self.__viewport.renderizar(self.__objetos)
+        self.__renderizar()
         self.__painelL.setZoom(-10)
 
     # Função para chamada de Up
     def __up(self):
         p = PrimeiraTransformacao(self.__objetos, self.__window, self.__viewport.coordenadas())
         p.up()
-        self.__viewport.renderizar(self.__objetos)
+        self.__renderizar()
 
     # Função para chamada de Left
     def __left(self):
         p = PrimeiraTransformacao(self.__objetos, self.__window, self.__viewport.coordenadas())
         p.left()
-        self.__viewport.renderizar(self.__objetos)
+        self.__renderizar()
 
     # Função para chamada de Right
     def __right(self):
         p = PrimeiraTransformacao(self.__objetos, self.__window, self.__viewport.coordenadas())
         p.right()
-        self.__viewport.renderizar(self.__objetos)
+        self.__renderizar()
 
     # Função para chamada de Down
     def __down(self):
         p = PrimeiraTransformacao(self.__objetos, self.__window, self.__viewport.coordenadas())
         p.down()
-        self.__viewport.renderizar(self.__objetos)
+        self.__renderizar()
 
     # Adição da viewport
     def __painelViewport(self):
@@ -154,7 +152,7 @@ class Janela(QWidget):
             dy = self.__painelL.getValoresTranslacao()[2]
             s = SegundaTransformacao()
             s.transladar(objeto, dx, dy)
-            self.__viewport.renderizar(self.__objetos)
+            self.__renderizar()
 
     # Ação para realizar a translação de todos os objetos
     def __transladarTodos(self):
@@ -163,7 +161,7 @@ class Janela(QWidget):
             dy = self.__painelL.getValoresTranslacao()[2]
             s = SegundaTransformacao()
             s.transladar(objeto, dx, dy)
-        self.__viewport.renderizar(self.__objetos)
+        self.__renderizar()
 
     # Ação para escalonar um objeto
     def __escalonarObjeto(self):
@@ -176,7 +174,7 @@ class Janela(QWidget):
             sy = self.__painelL.getValoresEscalonamento()[2]
             s = SegundaTransformacao()
             s.escalonarCentro(objeto, sx, sy)
-            self.__viewport.renderizar(self.__objetos)
+            self.__renderizar()
 
     # Ação de rotação do mundo
     def __rotacaoMundo(self):
@@ -188,7 +186,7 @@ class Janela(QWidget):
             angulo = self.__painelL.getValoresRotacao()[1]
             s = SegundaTransformacao()
             s.rotacionarCentroMundo(objeto, angulo)
-            self.__viewport.renderizar(self.__objetos)
+            self.__renderizar()
 
     # Ação de rotação do centro de um objeto
     def __rotacaoCentroObjeto(self):
@@ -200,7 +198,7 @@ class Janela(QWidget):
             angulo = self.__painelL.getValoresRotacao()[1]
             s = SegundaTransformacao()
             s.rotacionarCentroObjeto(objeto, angulo)
-            self.__viewport.renderizar(self.__objetos)
+            self.__renderizar()
 
     # Ação de rotação de um objeto em relação a um ponto
     def __rotacaoPontoQualquer(self):
@@ -214,4 +212,27 @@ class Janela(QWidget):
             y = self.__painelL.getValoresRotacao()[3]
             s = SegundaTransformacao()
             s.rotacionarPontoGraus(objeto, [x, y], angulo)
-            self.__viewport.renderizar(self.__objetos)
+            self.__renderizar()
+
+    # Acao de renderizar todos os objetos e eixos e a window
+    def __renderizar(self):
+        self.__viewport.renderizar(self.__eixosWindow() + self.__objetos)
+
+    # Retorna uma lista com Eixos X e Y em cinza e a Window em vermelho
+    def __eixosWindow(self):
+        coord = self.__window.coordenadas()
+        centro = self.__window.centro()
+        eixosWindow = []
+        eixoX = Linha('EixoX', [EstruturaPonto(coord[0], centro[1]), EstruturaPonto(coord[2], centro[1])])
+        eixoX.setCor(200,200,200)
+        eixosWindow.append(eixoX)
+        eixoY = Linha('EixoY', [EstruturaPonto(centro[0], coord[1]), EstruturaPonto(centro[0], coord[3])])
+        eixoY.setCor(200,200,200)
+        eixosWindow.append(eixoY)
+        view = Poligono('Window', [EstruturaPonto(coord[0], coord[1]),
+                                    EstruturaPonto(coord[2], coord[1]),
+                                    EstruturaPonto(coord[2], coord[3]),
+                                    EstruturaPonto(coord[0], coord[3])])
+        view.setCor(200,100,100)
+        eixosWindow.append(view)
+        return eixosWindow

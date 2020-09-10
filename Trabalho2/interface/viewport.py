@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import *
 from transformacao.primeiraTransformacao import *
+from transformacao.normalizacao import *
 
 class Viewport(QFrame):
     __coordenadas = [] # Coordenadas do viewport
@@ -26,8 +27,15 @@ class Viewport(QFrame):
     def renderizar(self, objetos):
         self.__viewport.update()
         self.__viewport.scene().clear()
+        # transformada de viewport
         primaeiraTransformacao = PrimeiraTransformacao(objetos, self.__window, self.__coordenadas)
         primaeiraTransformacao.transformadaViewport()
+        # normalizacao
+        n = Normalizacao(self.__window, self.__coordenadas)
+        for objeto in objetos:
+            n.normalizar(objeto)
+            n.view(objeto)
+        # desenhar na tela
         for objeto in objetos:
             objeto.desenhar(self.painel)
 

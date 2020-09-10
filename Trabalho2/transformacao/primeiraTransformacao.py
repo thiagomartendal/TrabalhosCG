@@ -31,30 +31,40 @@ class PrimeiraTransformacao:
 
     # Operação de zoomIn na window
     def zoomIn(self):
-        self.__window.setX2(self.__coordenadasW[2]-100)
-        self.__window.setY2(self.__coordenadasW[3]-100)
+        qnt = [100, 100]
+        self.__window.setX1(self.__coordenadasW[0] + qnt[0]/2)
+        self.__window.setX2(self.__coordenadasW[2] - qnt[0]/2)
+        self.__window.setY1(self.__coordenadasW[1] + qnt[1]/2)
+        self.__window.setY2(self.__coordenadasW[3] - qnt[1]/2)
 
     # Operação de zoomOut na window
     def zoomOut(self):
-        self.__window.setX2(self.__coordenadasW[2]+100)
-        self.__window.setY2(self.__coordenadasW[3]+100)
+        qnt = [100, 100]
+        self.__window.setX1(self.__coordenadasW[0] - qnt[0]/2)
+        self.__window.setX2(self.__coordenadasW[2] + qnt[0]/2)
+        self.__window.setY1(self.__coordenadasW[1] - qnt[1]/2)
+        self.__window.setY2(self.__coordenadasW[3] + qnt[1]/2)
 
     # Move a window para cima
     def up(self):
-        self.__window.setY1(self.__coordenadasW[1]-100)
-        self.__window.setY2(self.__coordenadasW[3]-100)
+        qnt = 100
+        self.__window.setY1(self.__coordenadasW[1] - qnt)
+        self.__window.setY2(self.__coordenadasW[3] - qnt)
 
     # Move a window para esquerda
     def left(self):
-        self.__window.setX1(self.__coordenadasW[0]+100)
-        self.__window.setX2(self.__coordenadasW[2]+100)
+        qnt = 100
+        self.__window.setX1(self.__coordenadasW[0] + qnt)
+        self.__window.setX2(self.__coordenadasW[2] + qnt)
 
     # Move a window para direita
     def right(self):
-        self.__window.setX1(self.__coordenadasW[0]-100)
-        self.__window.setX2(self.__coordenadasW[2]-100)
+        qnt = 100
+        self.__window.setX1(self.__coordenadasW[0] - qnt)
+        self.__window.setX2(self.__coordenadasW[2] - qnt)
 
     # Move a window para baixo
     def down(self):
-        self.__window.setY1(self.__coordenadasW[1]+100)
-        self.__window.setY2(self.__coordenadasW[3]+100)
+        qnt = 100
+        self.__window.setY1(self.__coordenadasW[1] + qnt)
+        self.__window.setY2(self.__coordenadasW[3] + qnt)

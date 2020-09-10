@@ -45,8 +45,8 @@ class SegundaTransformacao:
     # Retorna uma matriz 3x3 de rotacao por graus
     def __gerarMatrizRotacao(self, graus):
         angulo = radians(graus)
-        return [[cos(angulo), -sin(angulo), 0],
-                [sin(angulo), cos(angulo), 0],
+        return [[cos(angulo), sin(angulo), 0],
+                [-sin(angulo), cos(angulo), 0],
                 [0, 0, 1]]
 
     # Retorna uma matriz 3x3 de escalonamento por sX, sY

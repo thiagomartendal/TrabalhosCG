@@ -3,6 +3,8 @@ from abc import ABC, abstractmethod
 class Objeto(ABC):
     __pontos = [] # Vetor de coordenadas
     __pontosFixos = []
+    __pontosNormalizados = []
+    __cor = (0,0,0)
 
     # Construtor
     def __init__(self, nome, pontos):
@@ -25,6 +27,19 @@ class Objeto(ABC):
         self.__pontosFixos.clear()
         self.__pontosFixos = [p for p in novosPontos]
 
+    # Atualiza a lista de pontos normalizados
+    def setPontosNormalizados(self, novosPontos):
+        self.__pontosNormalizados.clear()
+        self.__pontosNormalizados = [p for p in novosPontos]
+
+    # Atualiza a cor
+    def setCor(self, r, g, b):
+        self.__cor = (r, g, b)
+
+    # Retorna a cor
+    def getCor(self):
+        return self.__cor
+
     # Retorna o nome
     def getNome(self):
         return self.__nome
@@ -36,6 +51,10 @@ class Objeto(ABC):
     # Retorna os vetor de pontos iniciais
     def getPontosFixos(self):
         return self.__pontosFixos
+
+    # Retorna os pontos normalizados
+    def getPontosNormalizados(self):
+        return self.__pontosNormalizados
 
     # Retorna o tipo físico do objeto
     @abstractmethod

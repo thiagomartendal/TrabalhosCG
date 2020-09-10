@@ -1,3 +1,5 @@
+# Thiago Martendal e Paulo Almeida
+
 from janela import *
 
 root = QApplication(sys.argv)
