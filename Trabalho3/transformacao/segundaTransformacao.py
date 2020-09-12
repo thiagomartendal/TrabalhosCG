@@ -36,16 +36,27 @@ class SegundaTransformacao:
         matResult = self.__calcularMatrizResultante([matTransParaPonto, matRotacao, matTransDeVolta])
         self.__aplicarMatObj(matResult, objeto)
 
-    def rotacionarWindow(self, graus, window):
+    def rotacionarWindow(self, graus, window, objetos):
         coord1 = [window.coordenadas()[0], window.coordenadas()[1], 1]
         coord2 = [window.coordenadas()[2], window.coordenadas()[3], 1]
-        matRotacao = self.__gerarMatrizRotacao(graus)
+        ponto = window.centro()
+        matRotacao = self.__gerarRotacaoWindow(graus, ponto)
         a = matmul(coord1, matRotacao)
         b = matmul(coord2, matRotacao)
         window.setX1(a[0])
         window.setY1(a[1])
         window.setX2(b[0])
         window.setY2(b[1])
+        for p in window.coordenadas():
+            print (p, " ")
+
+    def __gerarRotacaoWindow(self, graus, ponto):
+        matRotacao = self.__gerarMatrizRotacao(graus)
+        matTransParaPonto = self.__gerarMatrizTranslacao(-ponto[0], -ponto[1])
+        matRotacao = self.__gerarMatrizRotacao(graus)
+        matTransDeVolta = self.__gerarMatrizTranslacao(ponto[0], ponto[1])
+        matResult = self.__calcularMatrizResultante([matTransParaPonto, matRotacao, matTransDeVolta])
+        return matResult
 
     # Retorna uma matriz 3x3 de translacao para x, y
     def __gerarMatrizTranslacao(self, x, y):
@@ -56,8 +67,8 @@ class SegundaTransformacao:
     # Retorna uma matriz 3x3 de rotacao por graus
     def __gerarMatrizRotacao(self, graus):
         angulo = radians(graus)
-        return [[cos(angulo), sin(angulo), 0],
-                [-sin(angulo), cos(angulo), 0],
+        return [[cos(angulo), -sin(angulo), 0],
+                [sin(angulo), cos(angulo), 0],
                 [0, 0, 1]]
 
     # Retorna uma matriz 3x3 de escalonamento por sX, sY
