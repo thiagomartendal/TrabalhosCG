@@ -47,8 +47,6 @@ class SegundaTransformacao:
         window.setY1(a[1])
         window.setX2(b[0])
         window.setY2(b[1])
-        for p in window.coordenadas():
-            print (p, " ")
 
     def __gerarRotacaoWindow(self, graus, ponto):
         matRotacao = self.__gerarMatrizRotacao(graus)
