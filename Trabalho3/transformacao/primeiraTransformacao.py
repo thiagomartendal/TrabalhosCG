@@ -1,3 +1,5 @@
+from numpy import matmul
+from math import radians, cos, sin
 from objeto.estruturaPonto import *
 
 class PrimeiraTransformacao:
@@ -36,6 +38,9 @@ class PrimeiraTransformacao:
         self.__window.setX2(self.__coordenadasW[2] - qnt[0]/2)
         self.__window.setY1(self.__coordenadasW[1] + qnt[1]/2)
         self.__window.setY2(self.__coordenadasW[3] - qnt[1]/2)
+        # tamanho da window <= 0
+        largura, altura = self.__window.getSize()
+        if (largura <= 0) or (altura <= 0): self.zoomOut()
 
     # Operação de zoomOut na window
     def zoomOut(self):
@@ -48,23 +53,44 @@ class PrimeiraTransformacao:
     # Move a window para cima
     def up(self):
         qnt = 100
-        self.__window.setY1(self.__coordenadasW[1] - qnt)
-        self.__window.setY2(self.__coordenadasW[3] - qnt)
-
-    # Move a window para esquerda
-    def left(self):
-        qnt = 100
-        self.__window.setX1(self.__coordenadasW[0] + qnt)
-        self.__window.setX2(self.__coordenadasW[2] + qnt)
-
-    # Move a window para direita
-    def right(self):
-        qnt = 100
-        self.__window.setX1(self.__coordenadasW[0] - qnt)
-        self.__window.setX2(self.__coordenadasW[2] - qnt)
+        participacao = self.__participacaoEixo(0, qnt)
+        self.__window.setX1(self.__coordenadasW[0] - participacao[0])
+        self.__window.setX2(self.__coordenadasW[2] - participacao[0])
+        self.__window.setY1(self.__coordenadasW[1] - participacao[1])
+        self.__window.setY2(self.__coordenadasW[3] - participacao[1])
 
     # Move a window para baixo
     def down(self):
         qnt = 100
-        self.__window.setY1(self.__coordenadasW[1] + qnt)
-        self.__window.setY2(self.__coordenadasW[3] + qnt)
+        participacao = self.__participacaoEixo(0, qnt)
+        self.__window.setX1(self.__coordenadasW[0] + participacao[0])
+        self.__window.setX2(self.__coordenadasW[2] + participacao[0])
+        self.__window.setY1(self.__coordenadasW[1] + participacao[1])
+        self.__window.setY2(self.__coordenadasW[3] + participacao[1])
+
+    # Move a window para esquerda
+    def left(self):
+        qnt = 100
+        participacao = self.__participacaoEixo(qnt, 0)
+        self.__window.setX1(self.__coordenadasW[0] + participacao[0])
+        self.__window.setX2(self.__coordenadasW[2] + participacao[0])
+        self.__window.setY1(self.__coordenadasW[1] + participacao[1])
+        self.__window.setY2(self.__coordenadasW[3] + participacao[1])
+
+    # Move a window para direita
+    def right(self):
+        qnt = 100
+        participacao = self.__participacaoEixo(qnt, 0)
+        self.__window.setX1(self.__coordenadasW[0] - participacao[0])
+        self.__window.setX2(self.__coordenadasW[2] - participacao[0])
+        self.__window.setY1(self.__coordenadasW[1] - participacao[1])
+        self.__window.setY2(self.__coordenadasW[3] - participacao[1])
+
+    def __participacaoEixo(self, qntX, qntY):
+        angulo = radians(self.__window.getAngulo())
+        matRot = [[cos(angulo), sin(angulo)],
+                  [-sin(angulo), cos(angulo)]]
+        matQtd = [qntX, qntY]
+        return matmul(matQtd, matRot)
+        
+

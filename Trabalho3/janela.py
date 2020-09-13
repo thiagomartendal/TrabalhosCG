@@ -12,6 +12,7 @@ from objeto.poligono import *
 from transformacao.primeiraTransformacao import *
 from transformacao.segundaTransformacao import *
 from transformacao.normalizacao import *
+from descritor.descritorOBJ import *
 import sys
 import math
 
@@ -39,16 +40,40 @@ class Janela(QWidget):
     # Definição da window para o sistema gráfico interativo
     def __definirWindow(self):
         screen = QDesktopWidget().screenGeometry()
-        self.__window.setDimensao(screen.width(), screen.width())
-        #self.__window.setDimensao(1000, 1000)
+        self.__window.setDimensao(float(screen.width()), float(screen.width()))
 
     # Barra de Menu
     def __barraMenu(self):
         self.__menu = Menu(QMenuBar(self))
         self.__layoutVertical.addWidget(self.__menu)
+        self.__menu.menuAbrir().triggered.connect(self.__abrir)
+        self.__menu.menuSalvar().triggered.connect(self.__salvar)
         self.__menu.menuPoligo().triggered.connect(self.__inserirPoligono)
         self.__menu.menuLinha().triggered.connect(self.__inserirLinha)
         self.__menu.menuPonto().triggered.connect(self.__inserirPonto)
+
+    # Abrir Obj
+    def __abrir(self):
+        self.__objetos.clear()
+        d = DescritorOBJ()
+        d.setWindow(self.__window)
+        d.setObjetos(self.__objetos)
+        f = open("Wavefront.obj", "r")
+        str = f.read()
+        f.close()
+        d.lerArquivo(str)
+        self.__renderizar()
+        self.__painelL.atualizarLista(self.__objetos)
+
+    # Salvar Obj
+    def __salvar(self):
+        d = DescritorOBJ()
+        d.setWindow(self.__window)
+        d.setObjetos(self.__objetos)
+        str = d.escreverArquivo()
+        f = open("Wavefront.obj", "w")
+        f.write(str)
+        f.close()
 
     # Dialogo para inserção de poligono
     def __inserirPoligono(self):
@@ -96,7 +121,8 @@ class Janela(QWidget):
         self.__painelL.getBotoesRotacao()[0].clicked.connect(lambda: self.__rotacaoMundo())
         self.__painelL.getBotoesRotacao()[1].clicked.connect(lambda: self.__rotacaoCentroObjeto())
         self.__painelL.getBotoesRotacao()[2].clicked.connect(lambda: self.__rotacaoPontoQualquer())
-        self.__painelL.getBotoesRotacao()[3].clicked.connect(lambda: self.__rotacaoWindow())
+        self.__painelL.getBotoesRotacao()[3].clicked.connect(lambda: self.__rotacaoWindow(0))
+        self.__painelL.getBotoesRotacao()[4].clicked.connect(lambda: self.__rotacaoWindow(1))
 
     # Cada um dos métodos abaixo deve ter uma instancia propria de PrimeiraTransformacao, para atualizar os dados
     # Função para chamada de zoomIn
@@ -215,31 +241,14 @@ class Janela(QWidget):
             s.rotacionarPontoGraus(objeto, [x, y], angulo)
             self.__renderizar()
 
-    def __rotacaoWindow(self):
+    def __rotacaoWindow(self, direcao):
+        # Direcao: 0 - Esquerda | 1 - Direita
         angulo = self.__painelL.getValoresRotacao()[1]
-        s = SegundaTransformacao()
-        s.rotacionarWindow(angulo, self.__window)
+        if direcao == 0:
+            angulo *= -1
+        self.__window.addAngulo(angulo)
         self.__renderizar()
 
     # Acao de renderizar todos os objetos e eixos e a window
     def __renderizar(self):
-        self.__viewport.renderizar(self.__eixosWindow() + self.__objetos)
-
-    # Retorna uma lista com Eixos X e Y em cinza e a Window em vermelho
-    def __eixosWindow(self):
-        coord = self.__window.coordenadas()
-        centro = self.__window.centro()
-        eixosWindow = []
-        eixoX = Linha('EixoX', [EstruturaPonto(coord[0], centro[1]), EstruturaPonto(coord[2], centro[1])])
-        eixoX.setCor(200,200,200)
-        eixosWindow.append(eixoX)
-        eixoY = Linha('EixoY', [EstruturaPonto(centro[0], coord[1]), EstruturaPonto(centro[0], coord[3])])
-        eixoY.setCor(200,200,200)
-        eixosWindow.append(eixoY)
-        view = Poligono('Window', [EstruturaPonto(coord[0], coord[1]),
-                                    EstruturaPonto(coord[2], coord[1]),
-                                    EstruturaPonto(coord[2], coord[3]),
-                                    EstruturaPonto(coord[0], coord[3])])
-        view.setCor(200,100,100)
-        eixosWindow.append(view)
-        return eixosWindow
+        self.__viewport.renderizar(self.__objetos)

@@ -4,7 +4,7 @@ class EstruturaPonto:
     def __init__(self, x, y):
         self.__x = x
         self.__y = y
-        self.__w = 1
+        self.__w = 1.0
 
     # Define coordenada X
     def setX(self, x):

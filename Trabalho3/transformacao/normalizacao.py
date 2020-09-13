@@ -35,17 +35,23 @@ class Normalizacao:
     # Matriz de translacao
     def __translacao(self):
         wcX, wcY = self.__window.centro()
-        return [[1,0,0],[0,1,0],[-wcX, -wcY, 1]]
+        return [[1,0,0],
+                [0,1,0],
+                [-wcX, -wcY, 1]]
 
     # Matriz de rotacao
     def __rotacao(self):
         angulo = radians(-self.__window.getAngulo())
-        return [[cos(angulo), sin(angulo), 0], [-sin(angulo), cos(angulo), 0], [0, 0, 1]]
+        return [[cos(angulo), sin(angulo), 0],
+                [-sin(angulo), cos(angulo), 0],
+                [0, 0, 1]]
 
     # Matriz de escalonamento
     def __escalonamento(self):
         largura, altura = self.__window.getSize()
-        return [[2/largura, 0, 0], [0, 2/altura, 0], [0, 0, 1]]
+        return [[2/largura, 0, 0],
+                [0, 2/altura, 0],
+                [0, 0, 1]]
 
     # Matriz geral obtida pela multiplicacao da translacao, rotacao e escalonamento
     def __matrizGeral(self):

@@ -17,6 +17,11 @@ class Menu(QMenuBar):
 
     # Menus de controle para adição de objetos
     def __menusInternos(self):
+        arquivo = self.__menuPrincipal.addMenu("Arquivo")
+        self.__menuAbrir = QAction('Abrir Obj', self)
+        self.__menuSalvar = QAction('Salvar Obj', self)
+        arquivo.addAction(self.__menuAbrir)
+        arquivo.addAction(self.__menuSalvar)
         inserir = self.__menuPrincipal.addMenu("Inserir")
         self.__menuPoligono = QAction('Polígono', self)
         self.__menuLinha = QAction('Linha', self)
@@ -24,6 +29,14 @@ class Menu(QMenuBar):
         inserir.addAction(self.__menuPoligono)
         inserir.addAction(self.__menuLinha)
         inserir.addAction(self.__menuPonto)
+
+    # Retorna menu abrir
+    def menuAbrir(self):
+        return self.__menuAbrir
+
+    # Retorna menu salvar
+    def menuSalvar(self):
+        return self.__menuSalvar
 
     # Retorna menu poligo
     def menuPoligo(self):

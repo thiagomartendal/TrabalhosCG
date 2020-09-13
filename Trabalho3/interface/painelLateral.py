@@ -142,7 +142,7 @@ class PainelLateral(QScrollArea):
 
     # Definição dos botões de controle da rotação
     def __botoesRotacao(self):
-        self.__botoesControleRotacao = [QPushButton("Centro do Mundo"), QPushButton("Centro do Objeto"), QPushButton("Ponto Qualquer"), QPushButton("Window")]
+        self.__botoesControleRotacao = [QPushButton("Centro do Mundo"), QPushButton("Centro do Objeto"), QPushButton("Ponto Qualquer"), QPushButton("Window a Esquerda"), QPushButton("Window a Direita")]
 
     # Define os componentes de controle da rotação
     def __controlesRotacao(self):
@@ -153,6 +153,7 @@ class PainelLateral(QScrollArea):
         layoutPainel = QGridLayout()
         painel = QFrame()
         painel.setMaximumWidth(self.width()-75)
+        painel.setFixedWidth(190)
         painel.setLayout(layoutPainel)
         layoutPainel.addWidget(QLabel("Ângulo"), 0, 0)
         self.__entradaAngulo = QLineEdit()
@@ -174,6 +175,7 @@ class PainelLateral(QScrollArea):
         layoutPainel.addWidget(self.__botoesControleRotacao[1], 5, 1)
         layoutPainel.addWidget(self.__botoesControleRotacao[2], 6, 1)
         layoutPainel.addWidget(self.__botoesControleRotacao[3], 7, 1)
+        layoutPainel.addWidget(self.__botoesControleRotacao[4], 8, 1)
 
     # Atualiza a lista de objetos criados
     def atualizarLista(self, objetos):
