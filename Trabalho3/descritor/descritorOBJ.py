@@ -2,10 +2,14 @@ from objeto.estruturaPonto import *
 from objeto.poligono import *
 from objeto.linha import *
 from objeto.ponto import *
+from descritor.descritorMTL import *
 
 class DescritorOBJ:
-    __arquivoObj = ""
-    __vertices = []
+
+    # Construtor
+    def __init__(self):
+        self.__descritorMTL = DescritorMTL()
+        self.__vertices = []
 
     # Passa a window
     def setWindow(self, window):
@@ -26,8 +30,8 @@ class DescritorOBJ:
 
     # Escreve um objeto no arquivo obj
     def escreverOBJ(self, objeto):
-        descricaoObj = "o "+objeto.getNome()
-        descricaoObj += "\n"
+        descricaoObj = "o "+objeto.getNome() +"\n"
+        descricaoObj += "usemtl "+ self.__descritorMTL.material(objeto.getCor()) +"\n"
         if objeto.tipo() == 0: # poligono
             descricaoObj += "l "
         elif objeto.tipo() == 1: # linha
@@ -45,26 +49,30 @@ class DescritorOBJ:
 
     # Escreve a lista de objetos e a window no arquivo obj
     def escreverArquivo(self):
+        arquivoObj = ""
         self.__definirVertices()
         tmpDescricao = ""
+        arquivoObj += "mtllib materiais.mtl"+"\n"
         for i in range(len(self.__objetos)):
             objeto = self.__objetos[i]
             tmpDescricao += self.escreverOBJ(objeto)
             if i != len(self.__objetos)-1:
                 tmpDescricao += "\n"
         for v in self.__vertices:
-            self.__arquivoObj += "v "+str(v.X())+" "+str(v.Y())+" "+str(v.W())+"\n"
-        self.__arquivoObj += "o window\n"
-        self.__arquivoObj += "w 1 2\n"
-        self.__arquivoObj += tmpDescricao
-        return self.__arquivoObj
+            arquivoObj += "v "+str(v.X())+" "+str(v.Y())+" "+str(v.W())+"\n"
+        arquivoObj += "o window\n"
+        arquivoObj += "w 1 2\n"
+        arquivoObj += tmpDescricao
+        self.__descritorMTL.gerarArquivo()
+        return arquivoObj
 
     # Realiza a leitura do arquivo obj, criando os objetos
     def lerArquivo(self, str):
         linhas = str.splitlines()
+        arquivoMtl = linhas[0].split(" ")[1]
         tmpVertices = []
         resto = []
-        for l in linhas:
+        for l in linhas[1:]:
             tmpLinha = l.split(" ")
             if tmpLinha[0] == 'v':
                 tmpVertices.append(l)
@@ -73,9 +81,14 @@ class DescritorOBJ:
         for i in range(len(resto)):
             tmpLinha = resto[i].split(" ")
             nome = ""
+            cor = None
             if tmpLinha[0] == 'o':
                 nome = tmpLinha[1]
                 obj = resto[i+1].split(" ")
+                if obj[0] == "usemtl":
+                    corR, corG, corB = (0,0,0)
+                    corR, corG, corB = self.__descritorMTL.extrairCor(arquivoMtl, obj[1])
+                    obj = resto[i+2].split(" ")
                 if obj[0] == 'w':
                     centro = tmpVertices[int(obj[1])-1].split(" ")
                     dim = tmpVertices[int(obj[2])-1].split(" ")
@@ -85,6 +98,7 @@ class DescritorOBJ:
                     tmpPonto = []
                     tmpPonto.append(EstruturaPonto(float(ponto[1]), float(ponto[2])))
                     p = Ponto(nome, tmpPonto)
+                    p.setCor(corR, corG, corB)
                     self.__objetos.append(p)
                 elif obj[0] == 'l':
                     if len(obj)-1 == 2:
@@ -94,6 +108,7 @@ class DescritorOBJ:
                         tmpPonto2 = EstruturaPonto(float(p2[1]), float(p2[2]))
                         pontos = [tmpPonto1, tmpPonto2]
                         linha = Linha(nome, pontos)
+                        linha.setCor(corR, corG, corB)
                         self.__objetos.append(linha)
                     elif len(obj)-1 > 2:
                         pontos = []
@@ -102,4 +117,5 @@ class DescritorOBJ:
                             tmpPonto = EstruturaPonto(float(p[1]), float(p[2]))
                             pontos.append(tmpPonto)
                         pol = Poligono(nome, pontos)
+                        pol.setCor(corR, corG, corB)
                         self.__objetos.append(pol)
