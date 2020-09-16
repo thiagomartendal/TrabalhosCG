@@ -25,3 +25,6 @@ class EstruturaPonto:
     # Define coordenada W
     def W(self):
         return self.__w
+
+    def pontosStr(self):
+        print(str(self.__x) + " " + str(self.__y))
