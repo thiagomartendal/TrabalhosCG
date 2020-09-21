@@ -28,7 +28,7 @@ class DescritorMTL:
         texto = ""
         for m in self.__materiais:
             texto += m[1]
-        with open('materiais.mtl','w') as f:
+        with open('Wavefront.mtl','w') as f:
             f.write(texto)
     
     # Retorna o nome do material

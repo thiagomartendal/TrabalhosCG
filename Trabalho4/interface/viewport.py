@@ -45,10 +45,10 @@ class Viewport(QFrame):
         for objeto in objetos:
             n.normalizar(objeto)
             n.view(objeto)
+            self.__clipping.clip(objeto)
 
         # desenhar na tela
         for objeto in self.__viewportRetangulo + objetos:
-            self.__clipping.clip(objeto)
             objeto.desenhar(self.painel)
 
     # Retorna coordenadas da viewport
