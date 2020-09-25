@@ -161,6 +161,7 @@ class Janela(QWidget):
     def __down(self):
         p = PrimeiraTransformacao(self.__objetos, self.__window, self.__viewport.coordenadas())
         p.down()
+        # self.__viewport.deslocamento(1)
         self.__renderizar()
 
     # Adição da viewport

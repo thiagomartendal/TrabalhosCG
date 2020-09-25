@@ -24,6 +24,9 @@ class Viewport(QFrame):
         self.__clipping = Clipping(self.__coordenadas)
         self.__viewportRetangulo = self.__criarViewportRetangulo(self.__coordenadas)
 
+    # def deslocamento(self, valorDeslocado):
+        # self.__clipping.distanciaPontos(valorDeslocado)
+
     # Retorna o painel do viewport
     def painel(self):
         return self.__viewport
@@ -35,17 +38,17 @@ class Viewport(QFrame):
         # transformada de viewport
         #primaeiraTransformacao = PrimeiraTransformacao(objetos, self.__window, self.__coordenadas)
         #primaeiraTransformacao.transformadaViewport()
-        
+
         # normalizacao
         n = Normalizacao(self.__window, self.__coordenadas)
         objetos = self.__eixos() + objetos
         for objeto in objetos:
             n.normalizar(objeto)
             n.view(objeto)
+            self.__clipping.clip(objeto)
 
         # desenhar na tela
         for objeto in self.__viewportRetangulo + objetos:
-            self.__clipping.clip(objeto)
             objeto.desenhar(self.painel)
 
     # Retorna coordenadas da viewport

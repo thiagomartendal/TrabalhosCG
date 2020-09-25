@@ -52,7 +52,7 @@ class DescritorOBJ:
         arquivoObj = ""
         self.__definirVertices()
         tmpDescricao = ""
-        arquivoObj += "mtllib materiais.mtl"+"\n"
+        arquivoObj += "mtllib Wavefront.mtl"+"\n"
         for i in range(len(self.__objetos)):
             objeto = self.__objetos[i]
             tmpDescricao += self.escreverOBJ(objeto)
