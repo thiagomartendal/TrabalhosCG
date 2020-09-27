@@ -19,4 +19,8 @@ usemtl material1
 p 5
 o poligono
 usemtl material2
+<<<<<<< Updated upstream
 l 6 7 8 9 10
+=======
+l 6 7 8 9 10
+>>>>>>> Stashed changes

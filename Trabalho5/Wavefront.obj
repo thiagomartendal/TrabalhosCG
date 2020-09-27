@@ -1,0 +1,13 @@
+mtllib Wavefront.mtl
+v 0.0 0.0 1.0
+v 1360.0 1360.0 1.0
+o window
+w 1 2
+o 
+usemtl material0
+cstype bezier
+v 0.0 0.0 1
+v 0.0 100.0 1
+v 100.0 100.0 1
+v 100.0 0.0 1
+curv2 0 1 2 3

@@ -26,6 +26,13 @@ class Clipping:
                 objeto.setPontos(novos)
             else:
                 objeto.clearPontos()
+        # curva
+        elif objeto.tipo() == 3:
+            novos = self.__clippingCurva(pontos)
+            if novos != []:
+                objeto.setPontos(novos)
+            else:
+                objeto.clearPontos()
         # poligono
         elif len(pontos) > 2:
             novos = self.__clippingSutherlandHodgeman(pontos)
@@ -72,7 +79,7 @@ class Clipping:
                     return []
             return pontos
 
-     # Clipping de poligo Sutherland-Hodgeman
+    # Clipping de poligo Sutherland-Hodgeman
     def __clippingSutherlandHodgeman(self, pontos):
         # eixo X
         novosPontosEixoX = []
@@ -119,6 +126,20 @@ class Clipping:
             elif p2.Y() < self.__yBot and p1.Y() > self.__yBot:
                 novosPontosEixoXY.append(self.__fundo(p2, p1))
         return novosPontosEixoXY
+
+    # Clipping de Curva2D
+    def __clippingCurva(self, pontos):
+        novosPontos = []
+        for i in range(len(pontos)-1):
+            p1 = pontos[i]
+            p2 = pontos[i+1]
+            if self.__dentroWindow(p1) and self.__dentroWindow(p2):
+                novosPontos.append(p1)
+            elif self.__dentroWindow(p1) or self.__dentroWindow(p2):
+                novosPontos += self.__clippingCohenSutherland(p1, p2)
+            else:
+                novosPontos.append(-1)
+        return novosPontos
 
     # Vetor com a posicao do ponto em relacao a window
     def __posicao(self, p):
