@@ -6,9 +6,6 @@ from objeto.objeto import *
 from objeto.estruturaPonto import *
 
 class Curva2D(Objeto):
-
-    def getPontosControle(self):
-        return self.__pontos
     
     # Construtor
     def __init__(self, nome, pontos):
@@ -19,6 +16,10 @@ class Curva2D(Objeto):
 
     # 0 0 0 100 100 100 100 0
     # 0 0 0 100 100 100 100 0 100 -100 200 -100 200 0 200 100 300 100 300 0
+
+    # pontos de controle passados na criacao da curva
+    def getPontosControle(self):
+        return self.__pontos
 
     # Calcula os segmentos da reta a cada 4 pontos mantendo continuidade G(0)
     def __calcularSegmentos(self):
