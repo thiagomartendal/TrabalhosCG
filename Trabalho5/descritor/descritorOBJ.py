@@ -2,6 +2,7 @@ from objeto.estruturaPonto import *
 from objeto.poligono import *
 from objeto.linha import *
 from objeto.ponto import *
+from objeto.curva2D import *
 from descritor.descritorMTL import *
 
 class DescritorOBJ:
@@ -26,7 +27,6 @@ class DescritorOBJ:
         dimensao = EstruturaPonto(self.__window.dimensao()[0], self.__window.dimensao()[1])
         self.__vertices.append(centro) # Pos 1
         self.__vertices.append(dimensao) # Pos 2
-        self.__linha = 3
 
     # Escreve um objeto no arquivo obj
     def escreverOBJ(self, objeto):
@@ -43,20 +43,10 @@ class DescritorOBJ:
         for i in range(len(objeto.getPontosFixos())):
             ponto = objeto.getPontosFixos()[i]
             self.__vertices.append(ponto)
-            descricaoObj += str(self.__linha)
+            descricaoObj += str(len(self.__vertices))
             if i != len(objeto.getPontosFixos())-1:
                 descricaoObj += " "
-            self.__linha += 1
         return descricaoObj
-
-    def __escreverCurvaBezier(self, objeto, descricaoObj):
-        descricaoObj += "cstype bezier"+"\n"
-        for ponto in objeto.getPontosControle():
-            descricaoObj += "v "+str(ponto.X())+" "+str(ponto.Y())+" 1.0"+"\n"
-        descricaoObj += "curv2"
-        for i in range(len(objeto.getPontosControle())):
-            descricaoObj += " "+str(i+1)
-        return descricaoObj 
 
     # Escreve a lista de objetos e a window no arquivo obj
     def escreverArquivo(self):
@@ -130,3 +120,29 @@ class DescritorOBJ:
                         pol = Poligono(nome, pontos)
                         pol.setCor(corR, corG, corB)
                         self.__objetos.append(pol)
+                elif obj[0] == "cstype":
+                    if obj[1] == "bezier":
+                        i += 3
+                        tmpLinha = resto[i].split(" ")
+                        while tmpLinha[0] != 'end':
+                            if tmpLinha[0] == "curv2":
+                                pontosControle = []
+                                for v in tmpLinha[1:]:
+                                    verticeStr = tmpVertices[int(v)-1].split(' ')
+                                    tmpPonto = EstruturaPonto(float(verticeStr[1]), float(verticeStr[2]))
+                                    pontosControle.append(tmpPonto)
+                                curva = Curva2D(nome, pontosControle)
+                                curva.setCor(corR, corG, corB)
+                                self.__objetos.append(curva)
+                            i += 1
+                            tmpLinha = resto[i].split(" ")
+
+    # Escreve uma curva do tipo bezier no arquivo obj
+    def __escreverCurvaBezier(self, objeto, descricaoObj):
+        descricaoObj += "cstype bezier"+"\n"
+        descricaoObj += "curv2"
+        for p in objeto.getPontosControle():
+            self.__vertices.append(p)
+            descricaoObj += " "+str(len(self.__vertices))
+        descricaoObj += "\n"+"end"
+        return descricaoObj 
