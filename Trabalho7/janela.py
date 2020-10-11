@@ -282,7 +282,7 @@ class Janela(QWidget):
         angulo = self.__painelL.getValoresRotacao()[1]
         if direcao == 0:
             angulo *= -1
-        self.__window.addAngulo(angulo)
+        self.__window.addAnguloZ(angulo)
         self.__renderizar()
 
     # Acao de renderizar todos os objetos e eixos e a window

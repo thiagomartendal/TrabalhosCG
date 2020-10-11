@@ -30,6 +30,31 @@ class DescritorOBJ:
 
     # Escreve um objeto no arquivo obj
     def escreverOBJ(self, objeto):
+        if objeto.dimensao() == 3:
+            return self.__escreverOBJ3D(objeto)
+        else:
+            return self.__escreverOBJ2D(objeto)
+
+    def __escreverOBJ3D(self, objeto):
+        descricaoObj = "o "+objeto.getNome() +"\n"
+        descricaoObj += "usemtl "+ self.__descritorMTL.material(objeto.getCor()) +"\n"
+        if objeto.tipo() == 0: # poligono
+            descricaoObj += "l "
+        elif objeto.tipo() == 1: # linha
+            descricaoObj += "l "
+        elif objeto.tipo() == 2: # ponto
+            descricaoObj += "p "
+        elif objeto.tipo() == 3: # curva
+            return self.__escreverCurvaBezier(objeto, descricaoObj)
+        for i in range(len(objeto.getPontosFixos())):
+            ponto = objeto.getPontosFixos()[i]
+            self.__vertices.append(ponto)
+            descricaoObj += str(len(self.__vertices))
+            if i != len(objeto.getPontosFixos())-1:
+                descricaoObj += " "
+        return descricaoObj
+
+    def __escreverOBJ2D(self, objeto):
         descricaoObj = "o "+objeto.getNome() +"\n"
         descricaoObj += "usemtl "+ self.__descritorMTL.material(objeto.getCor()) +"\n"
         if objeto.tipo() == 0: # poligono
