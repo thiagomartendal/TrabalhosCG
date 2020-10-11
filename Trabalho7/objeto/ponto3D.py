@@ -14,7 +14,7 @@ class Ponto3D:
     # Define coordenada Y
     def setY(self, y):
         self.__y = y
-        
+
     # Define coordenada Y
     def setZ(self, z):
         self.__z = z
@@ -26,7 +26,7 @@ class Ponto3D:
     # Retorna coordenada Y
     def Y(self):
         return self.__y
-    
+
     # Retorna coordenada Z
     def Z(self):
         return self.__z

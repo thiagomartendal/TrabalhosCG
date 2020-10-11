@@ -39,6 +39,8 @@ class Viewport(QFrame):
         #primaeiraTransformacao = PrimeiraTransformacao(objetos, self.__window, self.__coordenadas)
         #primaeiraTransformacao.transformadaViewport()
 
+
+
         # normalizacao
         n = Normalizacao(self.__window, self.__coordenadas)
         objetos = self.__eixos() + objetos

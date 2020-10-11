@@ -8,6 +8,9 @@ from objeto.ponto import *
 from objeto.curva2D import *
 from objeto.bSpline import *
 from objeto.estruturaPonto import *
+from objeto.ponto3D import *
+from objeto.objeto3D import *
+from objeto.segmentoReta import *
 
 class InserirObjeto(QDialog):
     __coordenadas = [] # Coordenadas para formar pontos do objeto
@@ -35,7 +38,6 @@ class InserirObjeto(QDialog):
             layout.addWidget(mpon)
             self.__coordenadas = mpon.coordenadas()
         elif self.__tipo == 3:
-            # self.setFixedSize(500, 430)
             mcur = MontarPoligono()
             layout.addWidget(mcur)
             self.__coordenadas = mcur.coordenadas()
@@ -43,6 +45,12 @@ class InserirObjeto(QDialog):
             mspl = MontarPoligono()
             layout.addWidget(mspl)
             self.__coordenadas = mspl.coordenadas()
+        elif self.__tipo == 5:
+            self.setFixedSize(500, 250)
+            mpol3D = MontarPoligono()
+            layout.addWidget(mpol3D)
+            layout.addWidget(QLabel("A cada 3 coordenadas tem-se um ponto."))
+            self.__coordenadas = mpol3D.coordenadas()
         self.__botoes(layout)
 
     # Método par nomear o objeto
@@ -69,15 +77,7 @@ class InserirObjeto(QDialog):
         layoutPainel.addWidget(botaoCancelar)
         layout.addWidget(painel)
 
-    # Ação do botão OK
-    def __ok(self):
-        nome = self.__nomeObjeto.text()
-        multiPontos = self.__tipo == 0 or self.__tipo == 3 or self.__tipo == 4
-        tmpC = []
-        if multiPontos:
-            tmpC = self.__coordenadas[0].text().split(' ')
-        else:
-            tmpC = self.__coordenadas
+    def __definirObjetos2D(self, nome, tmpC, multiPontos):
         if len(tmpC) % 2 != 0:
             QMessageBox.question(self, 'Atenção', 'Digite um número par de coordenadas para formar os pontos.', QMessageBox.Ok)
         else:
@@ -92,21 +92,48 @@ class InserirObjeto(QDialog):
             tmpC.clear()
             if self.__tipo == 0:
                 self.__objeto = Poligono(nome, pontos)
-                self.__sinalBotao = 0
             elif self.__tipo == 1:
                 self.__objeto = Linha(nome, pontos)
-                self.__sinalBotao = 0
             elif self.__tipo == 2:
                 self.__objeto = Ponto(nome, pontos)
-                self.__sinalBotao = 0
             elif self.__tipo == 3:
                 self.__objeto = Curva2D(nome, pontos)
-                self.__sinalBotao = 0
             elif self.__tipo == 4:
                 self.__objeto = BSpline(nome, pontos)
-                self.__sinalBotao = 0
-            if self.__sinalBotao == 0:
-                self.hide()
+            self.__sinalBotao = 0
+            self.hide()
+
+    def __definirObjetos3D(self, nome, tmpC, multiPontos):
+        # pega os pontos do texto
+        pontos = []
+        for i in range(0, len(tmpC), 3):
+            str1 = tmpC[i] if multiPontos else tmpC[i].text()
+            str2 = tmpC[i+1] if multiPontos else tmpC[i+1].text()
+            str3 = tmpC[i+2] if multiPontos else tmpC[i+2].text()
+            pontos.append(Ponto3D(float(str1), float(str2), float(str3)))
+        # cria os segmentos
+        segmentos = []
+        prev = pontos[-1]
+        for p in pontos:
+            segmentos.append( SegmentoReta(prev, p) )
+            prev = p
+        self.__objeto = Objeto3D(nome, segmentos)
+        self.__sinalBotao = 0
+        self.hide()
+
+    # Ação do botão OK
+    def __ok(self):
+        nome = self.__nomeObjeto.text()
+        multiPontos = self.__tipo == 0 or self.__tipo == 3 or self.__tipo == 4  or self.__tipo == 5
+        tmpC = []
+        if multiPontos:
+            tmpC = self.__coordenadas[0].text().split(' ')
+        else:
+            tmpC = self.__coordenadas
+        if self.__tipo >= 5:
+            self.__definirObjetos3D(nome, tmpC, multiPontos)
+        else:
+            self.__definirObjetos2D(nome, tmpC, multiPontos)
 
     # Ação do botão Cancelar
     def __cancelar(self):

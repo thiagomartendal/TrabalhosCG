@@ -12,34 +12,35 @@ class Clipping:
 
     # Clipping
     def clip(self, objeto):
-        pontos = objeto.getPontos()
-        # ponto
-        if len(pontos) == 1:
-            if not self.__dentroWindow(pontos[0]):
-                objeto.clearPontos()
-        # linha
-        elif len(pontos) == 2:
-            p1 = pontos[0]
-            p2 = pontos[1]
-            novos = self.__clippingCohenSutherland(p1, p2)
-            if novos != []:
-                objeto.setPontos(novos)
-            else:
-                objeto.clearPontos()
-        # curva
-        elif objeto.tipo() == 3 or objeto.tipo() == 4:
-            novos = self.__clippingCurva(pontos)
-            if novos != []:
-                objeto.setPontos(novos)
-            else:
-                objeto.clearPontos()
-        # poligono
-        elif len(pontos) > 2:
-            novos = self.__clippingSutherlandHodgeman(pontos)
-            if novos != []:
-                objeto.setPontos(novos)
-            else:
-                objeto.clearPontos()
+        if objeto.dimensao() == 2:
+            pontos = objeto.getPontos()
+            # ponto
+            if len(pontos) == 1:
+                if not self.__dentroWindow(pontos[0]):
+                    objeto.clearPontos()
+            # linha
+            elif len(pontos) == 2:
+                p1 = pontos[0]
+                p2 = pontos[1]
+                novos = self.__clippingCohenSutherland(p1, p2)
+                if novos != []:
+                    objeto.setPontos(novos)
+                else:
+                    objeto.clearPontos()
+            # curva
+            elif objeto.tipo() == 3 or objeto.tipo() == 4:
+                novos = self.__clippingCurva(pontos)
+                if novos != []:
+                    objeto.setPontos(novos)
+                else:
+                    objeto.clearPontos()
+            # poligono
+            elif len(pontos) > 2:
+                novos = self.__clippingSutherlandHodgeman(pontos)
+                if novos != []:
+                    objeto.setPontos(novos)
+                else:
+                    objeto.clearPontos()
 
     # Boolean para ponto esta dentro da window
     def __dentroWindow(self, p):

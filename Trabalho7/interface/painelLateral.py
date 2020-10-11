@@ -191,6 +191,8 @@ class PainelLateral(QScrollArea):
                 nome = objeto.getNome()+": CurvaBezier"
             elif objeto.tipo() == 4:
                 nome = objeto.getNome()+": BSpline"
+            elif objeto.tipo() == 5:
+                nome = objeto.getNome()+": Modelo de Arame"
             self.__listaObjetos.addItem(nome)
 
     # Seleciona o índice do objeto selecionado

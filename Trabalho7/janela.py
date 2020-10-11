@@ -8,7 +8,7 @@ from window.window import *
 from interface.viewport import *
 from interface.painelLateral import *
 from interface.menu import *
-from objeto.poligono import *
+from interface.inserir.inserirObjeto import *
 from transformacao.primeiraTransformacao import *
 from transformacao.segundaTransformacao import *
 from transformacao.normalizacao import *
@@ -49,11 +49,12 @@ class Janela(QWidget):
         self.__layoutVertical.addWidget(self.__menu)
         self.__menu.menuAbrir().triggered.connect(self.__abrir)
         self.__menu.menuSalvar().triggered.connect(self.__salvar)
-        self.__menu.menuPoligo().triggered.connect(self.__inserirPoligono)
-        self.__menu.menuLinha().triggered.connect(self.__inserirLinha)
-        self.__menu.menuPonto().triggered.connect(self.__inserirPonto)
-        self.__menu.menuCurva().triggered.connect(self.__inserirCurva)
-        self.__menu.menuBSpline().triggered.connect(self.__inserirBSpline)
+        self.__menu.menuPoligo2D().triggered.connect(self.__inserirPoligono2D)
+        self.__menu.menuLinha2D().triggered.connect(self.__inserirLinha2D)
+        self.__menu.menuPonto2D().triggered.connect(self.__inserirPonto2D)
+        self.__menu.menuCurva2D().triggered.connect(self.__inserirCurva2D)
+        self.__menu.menuBSpline2D().triggered.connect(self.__inserirBSpline2D)
+        self.__menu.menuPoligo3D().triggered.connect(self.__inserirModeloArame)
 
     # Abrir Obj
     def __abrir(self):
@@ -78,8 +79,8 @@ class Janela(QWidget):
         f.write(str)
         f.close()
 
-    # Dialogo para inserção de poligono
-    def __inserirPoligono(self):
+    # Dialogo para inserção de poligono 2D
+    def __inserirPoligono2D(self):
         inserirPoligono = InserirObjeto(0)
         inserirPoligono.exec_()
         if inserirPoligono.getSinal() == 0:
@@ -88,8 +89,8 @@ class Janela(QWidget):
             self.__renderizar()
             self.__painelL.atualizarLista(self.__objetos)
 
-    # Dialogo para inserção de linha
-    def __inserirLinha(self):
+    # Dialogo para inserção de linha 2D
+    def __inserirLinha2D(self):
         inserirLinha = InserirObjeto(1)
         inserirLinha.exec_()
         if inserirLinha.getSinal() == 0:
@@ -98,8 +99,8 @@ class Janela(QWidget):
             self.__renderizar()
             self.__painelL.atualizarLista(self.__objetos)
 
-    # Dialogo para inserção de ponto
-    def __inserirPonto(self):
+    # Dialogo para inserção de ponto 2D
+    def __inserirPonto2D(self):
         inserirPonto = InserirObjeto(2)
         inserirPonto.exec_()
         if inserirPonto.getSinal() == 0:
@@ -108,8 +109,8 @@ class Janela(QWidget):
             self.__renderizar()
             self.__painelL.atualizarLista(self.__objetos)
 
-    # Dialogo para inserção de curva bezier
-    def __inserirCurva(self):
+    # Dialogo para inserção de curva bezier 2D
+    def __inserirCurva2D(self):
         inserirCurva = InserirObjeto(3)
         inserirCurva.exec_()
         if inserirCurva.getSinal() == 0:
@@ -118,12 +119,22 @@ class Janela(QWidget):
             self.__renderizar()
             self.__painelL.atualizarLista(self.__objetos)
 
-    # Dialogo para inserção de curva BSpline
-    def __inserirBSpline(self):
+    # Dialogo para inserção de curva BSpline 2D
+    def __inserirBSpline2D(self):
         inserirBSpline = InserirObjeto(4)
         inserirBSpline.exec_()
         if inserirBSpline.getSinal() == 0:
             objeto = inserirBSpline.getObj()
+            self.__objetos.append(objeto)
+            self.__renderizar()
+            self.__painelL.atualizarLista(self.__objetos)
+
+    # Dialogo para inserção de poligono 3D
+    def __inserirModeloArame(self):
+        inserirPoligono = InserirObjeto(5)
+        inserirPoligono.exec_()
+        if inserirPoligono.getSinal() == 0:
+            objeto = inserirPoligono.getObj()
             self.__objetos.append(objeto)
             self.__renderizar()
             self.__painelL.atualizarLista(self.__objetos)

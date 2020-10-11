@@ -65,6 +65,10 @@ class Objeto(ABC):
     def tipo(self):
         pass
 
+    # Define um objeto 2D
+    def dimensao(self):
+        return 2
+
     # Retorna o vetor [x, y] da média dos pontos
     def getMediaPontosFixos(self):
         mediaX = 0

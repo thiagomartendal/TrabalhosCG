@@ -23,16 +23,20 @@ class Menu(QMenuBar):
         arquivo.addAction(self.__menuAbrir)
         arquivo.addAction(self.__menuSalvar)
         inserir = self.__menuPrincipal.addMenu("Inserir")
-        self.__menuPoligono = QAction('Polígono', self)
-        self.__menuLinha = QAction('Linha', self)
-        self.__menuPonto = QAction('Ponto', self)
-        self.__menuCurva = QAction('Curva', self)
-        self.__menuBSpline = QAction('BSpline', self)
-        inserir.addAction(self.__menuPoligono)
-        inserir.addAction(self.__menuLinha)
-        inserir.addAction(self.__menuPonto)
-        inserir.addAction(self.__menuCurva)
-        inserir.addAction(self.__menuBSpline)
+        objetos2D = inserir.addMenu("Objetos 2D")
+        objetos3D = inserir.addMenu("Objetos 3D")
+        self.__menuPoligono2D = QAction('Polígono', self)
+        self.__menuLinha2D = QAction('Linha', self)
+        self.__menuPonto2D = QAction('Ponto', self)
+        self.__menuCurva2D = QAction('Curva', self)
+        self.__menuBSpline2D = QAction('BSpline', self)
+        self.__menuModeloArame = QAction('Modelo de Arame', self)
+        objetos2D.addAction(self.__menuPoligono2D)
+        objetos2D.addAction(self.__menuLinha2D)
+        objetos2D.addAction(self.__menuPonto2D)
+        objetos2D.addAction(self.__menuCurva2D)
+        objetos2D.addAction(self.__menuBSpline2D)
+        objetos3D.addAction(self.__menuModeloArame)
 
     # Retorna menu abrir
     def menuAbrir(self):
@@ -42,22 +46,26 @@ class Menu(QMenuBar):
     def menuSalvar(self):
         return self.__menuSalvar
 
-    # Retorna menu poligo
-    def menuPoligo(self):
-        return self.__menuPoligono
+    # Retorna menu poligo2D
+    def menuPoligo2D(self):
+        return self.__menuPoligono2D
 
-    # Retorna menu linha
-    def menuLinha(self):
-        return self.__menuLinha
+    # Retorna menu linha2D
+    def menuLinha2D(self):
+        return self.__menuLinha2D
 
-    # Retorna menu ponto
-    def menuPonto(self):
-        return self.__menuPonto
+    # Retorna menu ponto2D
+    def menuPonto2D(self):
+        return self.__menuPonto2D
 
-    # Retorna menu curva
-    def menuCurva(self):
-        return self.__menuCurva
+    # Retorna menu curva2D
+    def menuCurva2D(self):
+        return self.__menuCurva2D
 
-    # Retorna menu curvaBSpline
-    def menuBSpline(self):
-        return self.__menuBSpline
+    # Retorna menu curvaBSpline2D
+    def menuBSpline2D(self):
+        return self.__menuBSpline2D
+
+    # Retorna menu poligo3D
+    def menuPoligo3D(self):
+        return self.__menuModeloArame

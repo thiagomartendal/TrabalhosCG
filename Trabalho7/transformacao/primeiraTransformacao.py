@@ -87,7 +87,7 @@ class PrimeiraTransformacao:
         self.__window.setY2(self.__coordenadasW[3] - participacao[1])
 
     def __participacaoEixo(self, qntX, qntY):
-        angulo = radians(self.__window.getAngulo())
+        angulo = radians(self.__window.getAnguloZ())
         matRot = [[cos(angulo), sin(angulo)],
                   [-sin(angulo), cos(angulo)]]
         matQtd = [qntX, qntY]
