@@ -35,18 +35,18 @@ class Normalizacao:
         return pontos
 
     # Normalização para objetos 3D
-    def __normalizacao3D(self, objeto, segmentosFixos):
+    def __normalizacao3D(self, objeto, segmentosEntrada):
         segmentos = []
-        for segmento in segmentosFixos:
-            matrizPonto1 = [segmento.P1().X(), segmento.P1().Y(), segmento.P1().Z()]
-            matrizPonto2 = [segmento.P2().X(), segmento.P2().Y(), segmento.P2().Z()]
-            matrizRes1 = matmul(matrizPonto1, self.__matrizGeral())
-            matrizRes2 = matmul(matrizPonto2, self.__matrizGeral())
-            p1 = Ponto3D(matrizRes1[0], matrizRes1[1], matrizRes1[2])
-            p2 = Ponto3D(matrizRes2[0], matrizRes2[1], matrizRes2[2])
+        for segmento in segmentosEntrada:
+            matrizPonto1 = [segmento.P1().X(), segmento.P1().Y(), 1]
+            matrizPonto2 = [segmento.P2().X(), segmento.P2().Y(), 1]
+            matrizRes1 = matmul(matrizPonto1, self.__matrizGeral3D())
+            matrizRes2 = matmul(matrizPonto2, self.__matrizGeral3D())
+            p1 = EstruturaPonto(matrizRes1[0], matrizRes1[1])
+            p2 = EstruturaPonto(matrizRes2[0], matrizRes2[1])
             segmentos.append(SegmentoReta(p1, p2))
         return segmentos
-    
+
     # Ajusta os Pontos do objeto para serem desenhados com base nos PontosNormalizados do objeto
     def view(self, objeto):
         largura = self.__viewportCoordenadas[2] - self.__viewportCoordenadas[0]
@@ -73,13 +73,13 @@ class Normalizacao:
         for segmento in objeto.getSegmentosNormalizados():
             ponto1 = segmento.P1()
             ponto2 = segmento.P2()
-            matrizPonto1 = [ponto1.X(), -ponto1.Y(), ponto1.Z()]
-            matrizPonto2 = [ponto2.X(), -ponto2.Y(), ponto2.Z()]
+            matrizPonto1 = [ponto1.X(), -ponto1.Y(), 1]
+            matrizPonto2 = [ponto2.X(), -ponto2.Y(), 1]
             matrizEscal = [[largura/2,0,0],[0,altura/2,0],[0,0,1]]
             matrizResul1 = matmul(matrizPonto1, matrizEscal)
             matrizResul2 = matmul(matrizPonto2, matrizEscal)
-            p1 = Ponto3D(matrizResul1[0]+largura/2, matrizResul1[1]+altura/2, matrizResul1[2]+altura/2)
-            p2 = Ponto3D(matrizResul2[0]+largura/2, matrizResul2[1]+altura/2, matrizResul2[2]+altura/2)
+            p1 = EstruturaPonto(matrizResul1[0]+largura/2, matrizResul1[1]+altura/2)
+            p2 = EstruturaPonto(matrizResul2[0]+largura/2, matrizResul2[1]+altura/2)
             segmento = SegmentoReta(p1, p2)
             segmentos.append(segmento)
         objeto.setSegmentos(segmentos)
@@ -109,3 +109,7 @@ class Normalizacao:
     def __matrizGeral(self):
         m = matmul(self.__translacao(), self.__rotacao())
         return matmul(m, self.__escalonamento())
+
+    # Matriz geral obtida pela multiplicacao da translacao, rotacao e escalonamento
+    def __matrizGeral3D(self):
+        return matmul(self.__rotacao(), self.__escalonamento())

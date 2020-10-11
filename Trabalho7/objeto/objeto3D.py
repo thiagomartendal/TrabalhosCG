@@ -15,16 +15,10 @@ class Objeto3D():
 # 0 0 0 100 0 0 100 100 0 0 100 0 0 100 200 100 100 200 0 100 200 0 0 200
 # 0 0 0 0 100 0 0 100 100 0 0 100 0 0 0 100 0 0 100 0 100 0 0 100 100 0 0 100 100 0 100 100 100 100 0 100 100 100 0 0 100 0 0 100 100 100 100 100
 
-
     # Construtor
     def __init__(self, nome, segmentos):
         self.__nome = nome
-        self.__segmentos = [s for s in segmentos]
         self.__segmentosFixos = [s for s in segmentos]
-
-    # Zera a lista de pontos
-    def clearPontos(self):
-        self.__pontos.clear()
 
     # Atualiza a lista de pontos
     def setSegmentos(self, novosSegmentos):
@@ -206,16 +200,18 @@ class Objeto3D():
         return resultante
 
     # Retorna os segmentos apos ser aplicada a matriz
-    def aplicarMatSegmentos(self, mat, segmentos):
-        for s in segmentos:
+    def aplicarMatSegmentos(self, mat, segmentosEntrada):
+        segmentos = []
+        for s in segmentosEntrada:
             p1 = s.P1()
             p2 = s.P2()
             vp1 = [p1.X(), p1.Y(), p1.Z(), 1]
             vp2 = [p2.X(), p2.Y(), p2.Z(), 1]
             novoP1 = matmul(vp1, mat)
             novoP2 = matmul(vp2, mat)
-            s.setP1(Ponto3D(novoP1[0], novoP1[1], novoP1[2]))
-            s.setP2(Ponto3D(novoP2[0], novoP2[1], novoP2[2]))
+            ponto1 = Ponto3D(novoP1[0], novoP1[1], novoP1[2])
+            ponto2 = Ponto3D(novoP2[0], novoP2[1], novoP2[2])
+            segmentos.append( SegmentoReta(ponto1, ponto2))
         return segmentos
 
     # Todos os pontos do objeto sao multiplicados pela matriz

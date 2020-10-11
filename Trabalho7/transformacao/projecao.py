@@ -15,10 +15,12 @@ class Projecao():
         matTransOrig = self.__gerarMatrizTranslacao(-wcX, -wcY, -wcZ)
         matRotXAlin = self.__gerarMatrizRotacaoX(-self.__window.getAnguloX())
         matRotYAlin = self.__gerarMatrizRotacaoX(-self.__window.getAnguloY())
+        matRot30 = self.__gerarMatrizRotacaoY(-30)
         matResult = self.__calcularMatrizResultante([
                                                     matTransOrig,
                                                     matRotXAlin,
-                                                    matRotYAlin
+                                                    matRotYAlin,
+                                                    matRot30
                                                     ])
         return matResult
 
