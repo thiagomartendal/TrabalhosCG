@@ -41,6 +41,17 @@ class Clipping:
                     objeto.setPontos(novos)
                 else:
                     objeto.clearPontos()
+        else:
+            for s in objeto.getSegmentos():
+                p1 = s.P1()
+                p2 = s.P2()
+                novos = self.__clippingCohenSutherland(p1, p2)
+                if novos != []:
+                    s.setP1(novos[0])
+                    s.setP2(novos[1])
+                else:
+                    s.setP1(None)
+                    s.setP2(None)
 
     # Boolean para ponto esta dentro da window
     def __dentroWindow(self, p):

@@ -13,7 +13,9 @@ class Objeto3D():
 
 # 0 0 0 100 0 0 100 100 0 0 100 0
 # 0 0 0 100 0 0 100 100 0 0 100 0 0 100 200 100 100 200 0 100 200 0 0 200
-# 0 0 0 0 100 0 0 100 100 0 0 100 0 0 0 100 0 0 100 0 100 0 0 100 100 0 0 100 100 0 100 100 100 100 0 100 100 100 0 0 100 0 0 100 100 100 100 100
+# 0 0 0 100 0 0 100 0 100 0 0 100 0 100 100 0 100 0 0 0 0 0 0 100 0 100 100 100 100 100 100 0 100 100 100 100 100 100 0 100 0 0 100 100 0 0 100 0
+
+
 
     # Construtor
     def __init__(self, nome, segmentos):
@@ -216,7 +218,7 @@ class Objeto3D():
 
     # Todos os pontos do objeto sao multiplicados pela matriz
     def __aplicarMat(self, mat):
-        for s in self.__segmentosFixos():
+        for s in self.__segmentosFixos:
             p1 = s.P1()
             p2 = s.P2()
             vp1 = [p1.X(), p1.Y(), p1.Z(), 1]

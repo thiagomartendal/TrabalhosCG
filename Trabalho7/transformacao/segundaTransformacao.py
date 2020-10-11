@@ -1,22 +1,31 @@
 from numpy import matmul
 from math import radians, cos, sin
 from objeto.estruturaPonto import *
+from objeto.objeto3D import *
 
 class SegundaTransformacao:
 
     # Translada o objeto dado uma distancia x, y
     def transladar(self, objeto, x, y):
-        matT = self.__gerarMatrizTranslacao(x, y)
-        self.__aplicarMatObj(matT, objeto)
+        if objeto.dimensao() == 3:
+            z = 0
+            objeto.transladar(x, y, z)
+        else:
+            matT = self.__gerarMatrizTranslacao(x, y)
+            self.__aplicarMatObj(matT, objeto)
 
     # Escalona o objeto por um coeficiente sX, sY
     def escalonarCentro(self, objeto, sX, sY):
-        centro = objeto.getMediaPontosFixos()
-        matTransParaOrigem = self.__gerarMatrizTranslacao(-centro[0], -centro[1])
-        matEscalonamento = self.__gerarMatrizEscalonamento(sX, sY)
-        matTransDeVolta = self.__gerarMatrizTranslacao(centro[0], centro[1])
-        matResult = self.__calcularMatrizResultante([matTransParaOrigem, matEscalonamento, matTransDeVolta])
-        self.__aplicarMatObj(matResult, objeto)
+        if objeto.dimensao() == 3:
+            sZ = 1
+            objeto.escalonarCentro(sX, sY, sZ)
+        else:
+            centro = objeto.getMediaPontosFixos()
+            matTransParaOrigem = self.__gerarMatrizTranslacao(-centro[0], -centro[1])
+            matEscalonamento = self.__gerarMatrizEscalonamento(sX, sY)
+            matTransDeVolta = self.__gerarMatrizTranslacao(centro[0], centro[1])
+            matResult = self.__calcularMatrizResultante([matTransParaOrigem, matEscalonamento, matTransDeVolta])
+            self.__aplicarMatObj(matResult, objeto)
 
     # Rotaciona o objeto ao redor do seu centro por determinados graus
     def rotacionarCentroObjeto(self, objeto, graus):
