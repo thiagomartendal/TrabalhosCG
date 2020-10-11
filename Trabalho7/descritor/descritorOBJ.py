@@ -3,6 +3,9 @@ from objeto.poligono import *
 from objeto.linha import *
 from objeto.ponto import *
 from objeto.curva2D import *
+from objeto.objeto3D import *
+from objeto.ponto3D import *
+from objeto.segmentoReta import *
 from descritor.descritorMTL import *
 
 class DescritorOBJ:
@@ -38,19 +41,14 @@ class DescritorOBJ:
     def __escreverOBJ3D(self, objeto):
         descricaoObj = "o "+objeto.getNome() +"\n"
         descricaoObj += "usemtl "+ self.__descritorMTL.material(objeto.getCor()) +"\n"
-        if objeto.tipo() == 0: # poligono
-            descricaoObj += "l "
-        elif objeto.tipo() == 1: # linha
-            descricaoObj += "l "
-        elif objeto.tipo() == 2: # ponto
-            descricaoObj += "p "
-        elif objeto.tipo() == 3: # curva
-            return self.__escreverCurvaBezier(objeto, descricaoObj)
-        for i in range(len(objeto.getPontosFixos())):
-            ponto = objeto.getPontosFixos()[i]
-            self.__vertices.append(ponto)
+        if objeto.tipo() == 5: # poligono 3d
+            descricaoObj += "f "
+        segmentos = objeto.getSegmentosFixos()
+        for i in range(len(segmentos)):
+            s = segmentos[i]
+            self.__vertices.append(s.P2())
             descricaoObj += str(len(self.__vertices))
-            if i != len(objeto.getPontosFixos())-1:
+            if i != len(segmentos)-1:
                 descricaoObj += " "
         return descricaoObj
 
@@ -85,7 +83,10 @@ class DescritorOBJ:
             if i != len(self.__objetos)-1:
                 tmpDescricao += "\n"
         for v in self.__vertices:
-            arquivoObj += "v "+str(v.X())+" "+str(v.Y())+" "+str(v.W())+"\n"
+            if isinstance(v, Ponto3D):
+                arquivoObj += "v "+str(v.X())+" "+str(v.Y())+" "+str(v.Z())+" "+str(v.W())+"\n"
+            else:
+                arquivoObj += "v "+str(v.X())+" "+str(v.Y())+" "+str(v.W())+"\n"
         arquivoObj += "o window\n"
         arquivoObj += "w 1 2\n"
         arquivoObj += tmpDescricao
@@ -161,6 +162,21 @@ class DescritorOBJ:
                                 self.__objetos.append(curva)
                             i += 1
                             tmpLinha = resto[i].split(" ")
+                elif obj[0] == 'f':
+                    pontos = []
+                    for pos in range(1, len(obj)):
+                        p = tmpVertices[int(obj[pos])-1].split(" ")
+                        tmpPonto = Ponto3D(float(p[1]), float(p[2]), float(p[3]))
+                        pontos.append(tmpPonto)
+                    segmentos = []
+                    prev = pontos[-1]
+                    for p in pontos:
+                        seg = SegmentoReta(prev, p)
+                        segmentos.append(seg)
+                        prev = p
+                    obj3d = Objeto3D(nome, segmentos)
+                    obj3d.setCor(corR, corG, corB)
+                    self.__objetos.append(obj3d)
 
     # Escreve uma curva do tipo bezier no arquivo obj
     def __escreverCurvaBezier(self, objeto, descricaoObj):

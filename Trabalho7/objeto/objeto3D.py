@@ -132,7 +132,7 @@ class Objeto3D():
     def rotacionarGraus(self, graus):
         centroObj = self.getMediaSegmentosFixos()
         matTransParaPonto = self.__gerarMatrizTranslacao(-centroObj[0], -centroObj[1], -centroObj[2])
-        p2Obj = self.getSegmentosFixos()[0].P2()
+        p2Obj = self.getSegmentosFixos()[0].P1()
         angulos = self.__findAnguloEixos(centroObj, [p2Obj.X(), p2Obj.Y(), p2Obj.Z()])
         matRotX = self.__gerarMatrizRotacaoX(angulos[0])
         matRotZ = self.__gerarMatrizRotacaoZ(angulos[2])
