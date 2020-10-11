@@ -30,7 +30,8 @@ class SegundaTransformacao:
     # Rotaciona o objeto ao redor do seu centro por determinados graus
     def rotacionarCentroObjeto(self, objeto, graus):
         if objeto.dimensao() == 3:
-            objeto.rotacionarGraus(graus)
+            print('x')
+            objeto.rotacionarEixoX(graus)
         else:
             centro = objeto.getMediaPontosFixos()
             self.rotacionarPontoGraus(objeto, centro, graus)
@@ -38,7 +39,8 @@ class SegundaTransformacao:
     # Rotaciona o objeto ao redor do ponto [0, 0] do mundo por determinados graus
     def rotacionarCentroMundo(self, objeto, graus):
         if objeto.dimensao() == 3:
-            objeto.rotacionarGraus(graus)
+            print('y')
+            objeto.rotacionarEixoY(graus)
         else:
             centro = [0, 0]
             self.rotacionarPontoGraus(objeto, centro, graus)
@@ -46,7 +48,8 @@ class SegundaTransformacao:
     # Rotaciona o objeto por um ponto por determinados graus
     def rotacionarPontoGraus(self, objeto, ponto, graus):
         if objeto.dimensao() == 3:
-            objeto.rotacionarGraus(graus)
+            print('z')
+            objeto.rotacionarEixoZ(graus)
         else:
             matTransParaPonto = self.__gerarMatrizTranslacao(-ponto[0], -ponto[1])
             matRotacao = self.__gerarMatrizRotacao(graus)

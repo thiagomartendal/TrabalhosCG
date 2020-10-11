@@ -183,7 +183,7 @@ class Objeto3D():
         angulo = radians(graus)
         return [[cos(angulo), 0, -sin(angulo), 0],
                 [0, 1, 0, 0],
-                [sin(angulo), cos(angulo), 0, 0],
+                [sin(angulo), 0, cos(angulo), 0],
                 [0, 0, 0, 1]]
 
     # Retorna uma matriz 4x4 no eixo X de rotacao por graus
