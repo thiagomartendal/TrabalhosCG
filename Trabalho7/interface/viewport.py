@@ -4,6 +4,7 @@ from transformacao.normalizacao import *
 from interface.clipping import *
 from objeto.linha import *
 from objeto.poligono import *
+from objeto.objeto3D import *
 
 class Viewport(QFrame):
     __coordenadas = [] # Coordenadas do viewport
@@ -39,8 +40,6 @@ class Viewport(QFrame):
         #primaeiraTransformacao = PrimeiraTransformacao(objetos, self.__window, self.__coordenadas)
         #primaeiraTransformacao.transformadaViewport()
 
-
-
         # normalizacao
         n = Normalizacao(self.__window, self.__coordenadas)
         objetos = self.__eixos() + objetos
@@ -59,11 +58,14 @@ class Viewport(QFrame):
 
      # Retorna uma lista com eixos X e Y do mundo em cinza
     def __eixos(self):
-        eixoX = Linha('EixoX', [EstruturaPonto(0, -100), EstruturaPonto(0, 100)])
-        eixoX.setCor(200,200,200)
-        eixoY = Linha('EixoY', [EstruturaPonto(-100, 0), EstruturaPonto(100, 0)])
-        eixoY.setCor(200,200,200)
-        return [eixoX, eixoY]
+        tamanho = 100
+        eixoX = Objeto3D('EixoX', [SegmentoReta(Ponto3D(0,-tamanho,0), Ponto3D(0,tamanho,0))])
+        eixoX.setCor(255,150,150)
+        eixoY = Objeto3D('EixoY', [SegmentoReta(Ponto3D(-tamanho,0,0), Ponto3D(tamanho,0,0))])
+        eixoY.setCor(150,255,150)
+        eixoZ = Objeto3D('EixoZ', [SegmentoReta(Ponto3D(0,0,-tamanho), Ponto3D(0,0,tamanho))])
+        eixoZ.setCor(150,150,255)
+        return [eixoX, eixoY, eixoZ]
 
     # Retorna uma lista com a viewport em vermelho
     def __criarViewportRetangulo(self, c):

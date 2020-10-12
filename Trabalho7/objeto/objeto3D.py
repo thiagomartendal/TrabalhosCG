@@ -12,10 +12,8 @@ class Objeto3D():
     __cor = (0,0,0)
 
 # 0 0 0 100 0 0 100 100 0 0 100 0
-# 0 0 0 100 0 0 100 100 0 0 100 0 0 100 200 100 100 200 0 100 200 0 0 200
 # 0 0 0 100 0 0 100 0 100 0 0 100 0 100 100 0 100 0 0 0 0 0 0 100 0 100 100 100 100 100 100 0 100 100 100 100 100 100 0 100 0 0 100 100 0 0 100 0
-
-
+# 0 0 0 100 0 0 100 0 100 0 0 100 0 100 100 0 100 0 0 0 0 0 0 100 0 100 100 100 100 100 100 0 100 100 100 100 100 100 0 100 0 0 100 100 0 0 100 0 0 0 0 50 50 50
 
     # Construtor
     def __init__(self, nome, segmentos):
@@ -78,6 +76,8 @@ class Objeto3D():
 
     # Retorna o vetor [x, y] da média dos pontos
     def getMediaSegmentosFixos(self):
+        if len(self.__segmentosFixos) == 0:
+            return [0, 0, 0]
         mediaX = 0
         mediaY = 0
         mediaZ = 0
@@ -129,24 +129,30 @@ class Objeto3D():
         self.__aplicarMat(matResult)
 
     # Rotaciona o objeto por determinados graus
-    def rotacionarGraus(self, graus):
+    def rotacionarCentroGraus(self, graus):
+        # eixo de rotacao
         centroObj = self.getMediaSegmentosFixos()
+        p2Obj = self.getSegmentosFixos()[0].P2()
+        p2 = [p2Obj.X(), p2Obj.Y(), p2Obj.Z()]
+        angulos = self.__findAnguloEixos(centroObj, p2)
+        # ida
         matTransParaPonto = self.__gerarMatrizTranslacao(-centroObj[0], -centroObj[1], -centroObj[2])
-        p2Obj = self.getSegmentosFixos()[0].P1()
-        angulos = self.__findAnguloEixos(centroObj, [p2Obj.X(), p2Obj.Y(), p2Obj.Z()])
         matRotX = self.__gerarMatrizRotacaoX(angulos[0])
         matRotZ = self.__gerarMatrizRotacaoZ(angulos[2])
+        #rotacao
         matRotGraus = self.__gerarMatrizRotacaoY(graus)
-        matRotZrev = self.__gerarMatrizRotacaoZ(-angulos[2])
-        matRotXrev = self.__gerarMatrizRotacaoX(-angulos[0])
-        matTransDeVolta = self.__gerarMatrizTranslacao(centroObj[0], centroObj[1], centroObj[2])
+        # volta
+        matRotZvolt = self.__gerarMatrizRotacaoZ(-angulos[2])
+        matRotXvolt = self.__gerarMatrizRotacaoX(-angulos[0])
+        matTransVolt = self.__gerarMatrizTranslacao(centroObj[0], centroObj[1], centroObj[2])
+        # result
         matResult = self.__calcularMatrizResultante([matTransParaPonto,
                                                      matRotX,
                                                      matRotZ,
                                                      matRotGraus,
-                                                     matRotZrev,
-                                                     matRotXrev,
-                                                     matTransDeVolta])
+                                                     matRotZvolt,
+                                                     matRotXvolt,
+                                                     matTransVolt])
         self.__aplicarMat(matResult)
 
     # retorna lista com angulos do eixos do vetor dado por 2 pontos

@@ -14,6 +14,7 @@ class PainelLateral(QScrollArea):
         self.__controlesWindow()
         self.__controlesTranslacao()
         self.__controlesEscalonamento()
+        self.__selecaoEixo()
         self.__controlesRotacao()
         self.__listaObjetos.clicked.connect(lambda: self.__itemSelecionado())
 
@@ -46,13 +47,22 @@ class PainelLateral(QScrollArea):
 
     # Definição dos botões de controle da window
     def __botoesWindow(self):
-        self.__botoesControleWindow = [QPushButton("In"), QPushButton("Out"), QPushButton("Up"), QPushButton("Left"), QPushButton("Right"), QPushButton("Down")]
+        self.__botoesControleWindow = [QPushButton("In"),
+                                       QPushButton("Out"),
+                                       QPushButton("Up"),
+                                       QPushButton("Left"),
+                                       QPushButton("Right"),
+                                       QPushButton("Down"),
+                                       QPushButton("Forward"),
+                                       QPushButton("Back")]
         self.__botoesControleWindow[0].setFixedWidth(45)
         self.__botoesControleWindow[1].setFixedWidth(45)
         self.__botoesControleWindow[2].setFixedWidth(45)
         self.__botoesControleWindow[3].setFixedWidth(45)
         self.__botoesControleWindow[4].setFixedWidth(45)
         self.__botoesControleWindow[5].setFixedWidth(45)
+        self.__botoesControleWindow[6].setFixedWidth(55)
+        self.__botoesControleWindow[7].setFixedWidth(55)
 
     # Define os componentes de controle para transformações na window e no viewport
     def __controlesWindow(self):
@@ -77,6 +87,8 @@ class PainelLateral(QScrollArea):
         layoutPainel.addWidget(self.__botoesControleWindow[3], 2, 0)
         layoutPainel.addWidget(self.__botoesControleWindow[4], 2, 2)
         layoutPainel.addWidget(self.__botoesControleWindow[5], 3, 1)
+        layoutPainel.addWidget(self.__botoesControleWindow[6], 4, 0)
+        layoutPainel.addWidget(self.__botoesControleWindow[7], 4, 2)
         layout.addWidget(painel)
         self.__layoutPrincipal.addWidget(grupo)
 
@@ -103,14 +115,18 @@ class PainelLateral(QScrollArea):
         layoutPainel.addWidget(QLabel("DY"), 1, 0)
         self.__entradaDy.setFixedWidth(120)
         layoutPainel.addWidget(self.__entradaDy, 1, 1)
+        self.__entradaDz = QLineEdit()
+        layoutPainel.addWidget(QLabel("Dz"), 2, 0)
+        self.__entradaDz.setFixedWidth(120)
+        layoutPainel.addWidget(self.__entradaDz, 2, 1)
         layout.addWidget(painel)
         self.__layoutPrincipal.addWidget(grupo)
         self.__botoesTranslacao()
         tl = QLabel("Transladar Objeto:")
         tl.setFixedWidth(105)
-        layoutPainel.addWidget(tl, 2, 1)
-        layoutPainel.addWidget(self.__botoesControleTranslacao[0], 3, 1)
-        layoutPainel.addWidget(self.__botoesControleTranslacao[1], 3, 2)
+        layoutPainel.addWidget(tl, 3, 1)
+        layoutPainel.addWidget(self.__botoesControleTranslacao[0], 4, 1)
+        layoutPainel.addWidget(self.__botoesControleTranslacao[1], 4, 2)
 
     # Definição dos botões de controle do escalonamento
     def __botoesEscalonamento(self):
@@ -131,18 +147,51 @@ class PainelLateral(QScrollArea):
         self.__entradaSx = QLineEdit()
         self.__entradaSx.setFixedWidth(120)
         layoutPainel.addWidget(self.__entradaSx, 0, 1)
-        layoutPainel.addWidget(QLabel("SY"), 1, 0)
+        layoutPainel.addWidget(QLabel("Sy"), 1, 0)
         self.__entradaSy = QLineEdit()
         self.__entradaSy.setFixedWidth(120)
         layoutPainel.addWidget(self.__entradaSy, 1, 1)
+        layoutPainel.addWidget(QLabel("Sz"), 2, 0)
+        self.__entradaSz = QLineEdit()
+        self.__entradaSz.setFixedWidth(120)
+        layoutPainel.addWidget(self.__entradaSz, 2, 1)
         layout.addWidget(painel)
         self.__layoutPrincipal.addWidget(grupo)
         self.__botoesEscalonamento()
-        layoutPainel.addWidget(self.__botoesControleEscalonamento[0], 2, 1)
+        layoutPainel.addWidget(self.__botoesControleEscalonamento[0], 3, 1)
+
+    # Define os componentes de selecao de eixo
+    def __selecaoEixo(self):
+        layout = QVBoxLayout()
+        grupo = QGroupBox()
+        grupo.setTitle("Eixo")
+        grupo.setLayout(layout)
+        layoutPainel = QGridLayout()
+        painel = QFrame()
+        painel.setMaximumWidth(self.width()-75)
+        painel.setLayout(layoutPainel)
+        layout.addWidget(painel)
+        self.__layoutPrincipal.addWidget(grupo)
+        #
+        self.__botoesEixo = [QPushButton("X"), QPushButton("Y"), QPushButton("Z")]
+        self.__botoesEixo[0].setStyleSheet("background-color: red")
+        self.__botoesEixo[1].setStyleSheet("background-color: lightgreen")
+        self.__botoesEixo[2].setStyleSheet("background-color: lightblue")
+        self.__eixoAtualLabel = QLabel("Eixo Atual: Z")
+        self.__eixoAtualLabel.setFixedWidth(105)
+        layoutPainel.addWidget(self.__eixoAtualLabel, 1, 1)
+        layoutPainel.addWidget(self.__botoesEixo[0], 2, 1)
+        layoutPainel.addWidget(self.__botoesEixo[1], 2, 2)
+        layoutPainel.addWidget(self.__botoesEixo[2], 2, 3)
 
     # Definição dos botões de controle da rotação
     def __botoesRotacao(self):
-        self.__botoesControleRotacao = [QPushButton("Centro do Mundo"), QPushButton("Centro do Objeto"), QPushButton("Ponto Qualquer"), QPushButton("Window a Esquerda"), QPushButton("Window a Direita")]
+        self.__botoesControleRotacao = [QPushButton("Eixo"),
+                                        QPushButton("Centro do Mundo"),
+                                        QPushButton("Centro do Objeto"),
+                                        QPushButton("Ponto Qualquer"),
+                                        QPushButton("Window a Esquerda"),
+                                        QPushButton("Window a Direita")]
 
     # Define os componentes de controle da rotação
     def __controlesRotacao(self):
@@ -167,15 +216,20 @@ class PainelLateral(QScrollArea):
         self.__entradaY = QLineEdit()
         self.__entradaY.setFixedWidth(120)
         layoutPainel.addWidget(self.__entradaY, 2, 1)
+        layoutPainel.addWidget(QLabel("Z"), 3, 0)
+        self.__entradaZ = QLineEdit()
+        self.__entradaZ.setFixedWidth(120)
+        layoutPainel.addWidget(self.__entradaZ, 3, 1)
         layout.addWidget(painel)
         self.__layoutPrincipal.addWidget(grupo)
         self.__botoesRotacao()
-        layoutPainel.addWidget(QLabel("Rotacionar:"), 3, 1)
-        layoutPainel.addWidget(self.__botoesControleRotacao[0], 4, 1)
-        layoutPainel.addWidget(self.__botoesControleRotacao[1], 5, 1)
-        layoutPainel.addWidget(self.__botoesControleRotacao[2], 6, 1)
-        layoutPainel.addWidget(self.__botoesControleRotacao[3], 7, 1)
-        layoutPainel.addWidget(self.__botoesControleRotacao[4], 8, 1)
+        layoutPainel.addWidget(QLabel("Rotacionar:"), 4, 1)
+        layoutPainel.addWidget(self.__botoesControleRotacao[0], 5, 1)
+        layoutPainel.addWidget(self.__botoesControleRotacao[1], 6, 1)
+        layoutPainel.addWidget(self.__botoesControleRotacao[2], 7, 1)
+        layoutPainel.addWidget(self.__botoesControleRotacao[3], 8, 1)
+        layoutPainel.addWidget(self.__botoesControleRotacao[4], 9, 1)
+        layoutPainel.addWidget(self.__botoesControleRotacao[5], 10, 1)
 
     # Atualiza a lista de objetos criados
     def atualizarLista(self, objetos):
@@ -218,7 +272,7 @@ class PainelLateral(QScrollArea):
 
     # Retorna os valores da translação
     def getValoresTranslacao(self):
-        return [self.__posItem, float(self.__entradaDx.text()), float(self.__entradaDy.text())]
+        return [self.__posItem, float(self.__entradaDx.text()), float(self.__entradaDy.text()), float(self.__entradaDz.text())]
 
     # Retorna os botões de controle do escalonamento
     def getBotoesEscalonamento(self):
@@ -226,7 +280,7 @@ class PainelLateral(QScrollArea):
 
     # Retorna os valores do escalonamento
     def getValoresEscalonamento(self):
-        return [self.__posItem, float(self.__entradaSx.text()), float(self.__entradaSy.text())]
+        return [self.__posItem, float(self.__entradaSx.text()), float(self.__entradaSy.text()), float(self.__entradaSz.text())]
 
     # Retorna os botões de controle da rotação
     def getBotoesRotacao(self):
@@ -234,10 +288,23 @@ class PainelLateral(QScrollArea):
 
     # Retorna os valores da rotação
     def getValoresRotacao(self):
+        angulo = self.__entradaAngulo.text()
         x = self.__entradaX.text()
         y = self.__entradaY.text()
+        z = self.__entradaZ.text()
+        if angulo == "":
+            angulo = 0
         if x == "":
             x = 0
         if y == "":
             y = 0
-        return [self.__posItem, float(self.__entradaAngulo.text()), float(x), float(y)]
+        if z == "":
+            z = 0
+        return [self.__posItem, float(angulo), float(x), float(y), float(z)]
+
+    # Retorna os botões de selecao do Eixo
+    def getBotoesEixo(self):
+        return self.__botoesEixo
+
+    def setEixoAtual(self, eixo):
+        self.__eixoAtualLabel.setText("Eixo Atual: " + eixo)

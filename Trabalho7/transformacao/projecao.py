@@ -13,14 +13,14 @@ class Projecao():
     def projecaoParalelaOrtogonal(self):
         wcX, wcY, wcZ = self.__window.centro3D()
         matTransOrig = self.__gerarMatrizTranslacao(-wcX, -wcY, -wcZ)
-        matRotXAlin = self.__gerarMatrizRotacaoX(-self.__window.getAnguloX())
-        matRotYAlin = self.__gerarMatrizRotacaoX(-self.__window.getAnguloY())
-        matRot30 = self.__gerarMatrizRotacaoY(-30)
-        matResult = self.__calcularMatrizResultante([
+        matRotXAlin = self.gerarMatrizRotacaoX(-self.__window.getAnguloX())
+        matRotYAlin = self.gerarMatrizRotacaoY(-self.__window.getAnguloY())
+        matRot = self.gerarMatrizRotacaoY(30)
+        matResult = self.calcularMatrizResultante([
                                                     matTransOrig,
                                                     matRotXAlin,
                                                     matRotYAlin,
-                                                    matRot30
+                                                    matRot
                                                     ])
         return matResult
 
@@ -31,15 +31,8 @@ class Projecao():
                 [0, 0, 1, 0],
                 [x, y, z, 1]]
 
-    # Retorna uma matriz 4x4 de escalonamento por sX, sY, sZ
-    def __gerarMatrizEscalonamento(self, sX, sY, sZ):
-        return [[sX, 0, 0, 0],
-                [0, sY, 0, 0],
-                [0, 0, sZ, 0],
-                [0, 0, 0, 1]]
-
     # Retorna uma matriz 4x4 no eixo Z de rotacao por graus
-    def __gerarMatrizRotacaoZ(self, graus):
+    def gerarMatrizRotacaoZ(self, graus):
         angulo = radians(graus)
         return [[cos(angulo), sin(angulo), 0, 0],
                 [-sin(angulo), cos(angulo), 0, 0],
@@ -47,15 +40,15 @@ class Projecao():
                 [0, 0, 0, 1]]
 
     # Retorna uma matriz 4x4 no eixo Y de rotacao por graus
-    def __gerarMatrizRotacaoY(self, graus):
+    def gerarMatrizRotacaoY(self, graus):
         angulo = radians(graus)
         return [[cos(angulo), 0, -sin(angulo), 0],
                 [0, 1, 0, 0],
-                [sin(angulo), cos(angulo), 0, 0],
+                [sin(angulo), 0, cos(angulo), 0],
                 [0, 0, 0, 1]]
 
     # Retorna uma matriz 4x4 no eixo X de rotacao por graus
-    def __gerarMatrizRotacaoX(self, graus):
+    def gerarMatrizRotacaoX(self, graus):
         angulo = radians(graus)
         return [[1, 0, 0, 0],
                 [0, cos(angulo), sin(angulo), 0],
@@ -63,7 +56,7 @@ class Projecao():
                 [0, 0, 0, 1]]
 
     # Retorna a matriz resultante da multiplicacao da lista
-    def __calcularMatrizResultante(self, matrizes):
+    def calcularMatrizResultante(self, matrizes):
         resultante = matrizes.pop(0)
         for mat in matrizes:
             resultante = matmul(resultante, mat)

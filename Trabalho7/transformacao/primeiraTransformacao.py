@@ -1,6 +1,7 @@
 from numpy import matmul
 from math import radians, cos, sin
 from objeto.estruturaPonto import *
+from transformacao.projecao import *
 
 class PrimeiraTransformacao:
 
@@ -9,7 +10,7 @@ class PrimeiraTransformacao:
         self.__objetos = objetos
         self.__window = window
         self.__coordenadasV = coordenadasV
-        self.__coordenadasW = self.__window.coordenadas()
+        self.__coordenadasW = self.__window.coordenadas3D()
 
     # Calculo da transformada de viewport
     def transformadaViewport(self):
@@ -52,45 +53,53 @@ class PrimeiraTransformacao:
 
     # Move a window para cima
     def up(self):
-        qnt = 100
-        participacao = self.__participacaoEixo(0, qnt)
-        self.__window.setX1(self.__coordenadasW[0] - participacao[0])
-        self.__window.setX2(self.__coordenadasW[2] - participacao[0])
-        self.__window.setY1(self.__coordenadasW[1] - participacao[1])
-        self.__window.setY2(self.__coordenadasW[3] - participacao[1])
+        participacao = self.__participacaoEixo(0, -1, 0, 100)
+        self.__mover(participacao)
 
     # Move a window para baixo
     def down(self):
-        qnt = 100
-        participacao = self.__participacaoEixo(0, qnt)
-        self.__window.setX1(self.__coordenadasW[0] + participacao[0])
-        self.__window.setX2(self.__coordenadasW[2] + participacao[0])
-        self.__window.setY1(self.__coordenadasW[1] + participacao[1])
-        self.__window.setY2(self.__coordenadasW[3] + participacao[1])
+        participacao = self.__participacaoEixo(0, 1, 0, 100)
+        self.__mover(participacao)
 
     # Move a window para esquerda
     def left(self):
-        qnt = 100
-        participacao = self.__participacaoEixo(qnt, 0)
-        self.__window.setX1(self.__coordenadasW[0] + participacao[0])
-        self.__window.setX2(self.__coordenadasW[2] + participacao[0])
-        self.__window.setY1(self.__coordenadasW[1] + participacao[1])
-        self.__window.setY2(self.__coordenadasW[3] + participacao[1])
+        participacao = self.__participacaoEixo(1, 0, 0, 100)
+        self.__mover(participacao)
 
     # Move a window para direita
     def right(self):
-        qnt = 100
-        participacao = self.__participacaoEixo(qnt, 0)
-        self.__window.setX1(self.__coordenadasW[0] - participacao[0])
-        self.__window.setX2(self.__coordenadasW[2] - participacao[0])
-        self.__window.setY1(self.__coordenadasW[1] - participacao[1])
-        self.__window.setY2(self.__coordenadasW[3] - participacao[1])
+        participacao = self.__participacaoEixo(-1, 0, 0, 100)
+        self.__mover(participacao)
 
-    def __participacaoEixo(self, qntX, qntY):
-        angulo = radians(self.__window.getAnguloZ())
-        matRot = [[cos(angulo), sin(angulo)],
-                  [-sin(angulo), cos(angulo)]]
-        matQtd = [qntX, qntY]
-        return matmul(matQtd, matRot)
-        
+    # Move a window para dentro
+    def forward(self):
+        participacao = self.__participacaoEixo(0, 0, 1, 100)
+        self.__mover(participacao)
 
+    # Move a window para fora
+    def back(self):
+        participacao = self.__participacaoEixo(0, 0, -1, 100)
+        self.__mover(participacao)
+
+    # move a window
+    def __mover(self, participacao):
+        x, y, z = participacao
+        self.__window.setX1(self.__coordenadasW[0] + x)
+        self.__window.setX2(self.__coordenadasW[2] + x)
+        self.__window.setY1(self.__coordenadasW[1] + y)
+        self.__window.setY2(self.__coordenadasW[3] + y)
+        self.__window.setZ( self.__coordenadasW[4] + z)
+
+    # Vetor com a participacao de cada eixo no movimento
+    def __participacaoEixo(self, x, y, z, qtd):
+        proj = Projecao(self.__window)
+        x *= qtd
+        y *= qtd
+        z *= qtd
+        matQtd = [x, y, z, 1]
+        mrx = proj.gerarMatrizRotacaoX(self.__window.getAnguloX())
+        mry = proj.gerarMatrizRotacaoY(self.__window.getAnguloY())
+        mrz = proj.gerarMatrizRotacaoZ(self.__window.getAnguloZ())
+        mresult = proj.calcularMatrizResultante([mrx, mry, mrz])
+        participacao = matmul(matQtd, mresult)
+        return participacao[:-1]

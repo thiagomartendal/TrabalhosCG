@@ -21,6 +21,7 @@ class Janela(QWidget):
     __layoutHorizontal = QHBoxLayout() # Layout Principal horizontal
     __window = Window() # Instancia da Window
     __objetos = [] # Lista de objetos criados
+    __eixoAtual = 'Z' # Eixo selecionado para rotacao e movimentacao
 
     # Construtor com definições da classe
     def __init__(self, parent=None):
@@ -149,14 +150,22 @@ class Janela(QWidget):
         self.__painelL.getBotoesWindow()[3].clicked.connect(lambda: self.__left())
         self.__painelL.getBotoesWindow()[4].clicked.connect(lambda: self.__right())
         self.__painelL.getBotoesWindow()[5].clicked.connect(lambda: self.__down())
+        self.__painelL.getBotoesWindow()[6].clicked.connect(lambda: self.__forward())
+        self.__painelL.getBotoesWindow()[7].clicked.connect(lambda: self.__back())
         self.__painelL.getBotoesTranslacao()[0].clicked.connect(lambda: self.__transladarTodos())
         self.__painelL.getBotoesTranslacao()[1].clicked.connect(lambda: self.__transladarObjeto())
         self.__painelL.getBotoesEscalonamento()[0].clicked.connect(lambda: self.__escalonarObjeto())
-        self.__painelL.getBotoesRotacao()[0].clicked.connect(lambda: self.__rotacaoMundo())
-        self.__painelL.getBotoesRotacao()[1].clicked.connect(lambda: self.__rotacaoCentroObjeto())
-        self.__painelL.getBotoesRotacao()[2].clicked.connect(lambda: self.__rotacaoPontoQualquer())
-        self.__painelL.getBotoesRotacao()[3].clicked.connect(lambda: self.__rotacaoWindow(0))
-        self.__painelL.getBotoesRotacao()[4].clicked.connect(lambda: self.__rotacaoWindow(1))
+        self.__painelL.getBotoesRotacao()[0].clicked.connect(lambda: self.__rotacaoEixo())
+        self.__painelL.getBotoesRotacao()[1].clicked.connect(lambda: self.__rotacaoMundo())
+        self.__painelL.getBotoesRotacao()[2].clicked.connect(lambda: self.__rotacaoCentroObjeto())
+        self.__painelL.getBotoesRotacao()[3].clicked.connect(lambda: self.__rotacaoPontoQualquer())
+        self.__painelL.getBotoesRotacao()[4].clicked.connect(lambda: self.__rotacaoWindow(0))
+        self.__painelL.getBotoesRotacao()[5].clicked.connect(lambda: self.__rotacaoWindow(1))
+        self.__painelL.getBotoesEixo()[0].clicked.connect(lambda: self.__selecaoEixo('X'))
+        self.__painelL.getBotoesEixo()[1].clicked.connect(lambda: self.__selecaoEixo('Y'))
+        self.__painelL.getBotoesEixo()[2].clicked.connect(lambda: self.__selecaoEixo('Z'))
+        
+        
 
     # Cada um dos métodos abaixo deve ter uma instancia propria de PrimeiraTransformacao, para atualizar os dados
     # Função para chamada de zoomIn
@@ -195,7 +204,18 @@ class Janela(QWidget):
     def __down(self):
         p = PrimeiraTransformacao(self.__objetos, self.__window, self.__viewport.coordenadas())
         p.down()
-        # self.__viewport.deslocamento(1)
+        self.__renderizar()
+
+    # Função para chamada de Forward
+    def __forward(self):
+        p = PrimeiraTransformacao(self.__objetos, self.__window, self.__viewport.coordenadas())
+        p.forward()
+        self.__renderizar()
+
+    # Função para chamada de Back
+    def __back(self):
+        p = PrimeiraTransformacao(self.__objetos, self.__window, self.__viewport.coordenadas())
+        p.back()
         self.__renderizar()
 
     # Adição da viewport
@@ -212,8 +232,9 @@ class Janela(QWidget):
             objeto = self.__objetos[pos]
             dx = self.__painelL.getValoresTranslacao()[1]
             dy = self.__painelL.getValoresTranslacao()[2]
+            dz = self.__painelL.getValoresTranslacao()[3]
             s = SegundaTransformacao()
-            s.transladar(objeto, dx, dy)
+            s.transladar(objeto, dx, dy, dz)
             self.__renderizar()
 
     # Ação para realizar a translação de todos os objetos
@@ -221,8 +242,9 @@ class Janela(QWidget):
         for objeto in self.__objetos:
             dx = self.__painelL.getValoresTranslacao()[1]
             dy = self.__painelL.getValoresTranslacao()[2]
+            dz = self.__painelL.getValoresTranslacao()[3]
             s = SegundaTransformacao()
-            s.transladar(objeto, dx, dy)
+            s.transladar(objeto, dx, dy, dz)
         self.__renderizar()
 
     # Ação para escalonar um objeto
@@ -234,8 +256,21 @@ class Janela(QWidget):
             objeto = self.__objetos[pos]
             sx = self.__painelL.getValoresEscalonamento()[1]
             sy = self.__painelL.getValoresEscalonamento()[2]
+            sz = self.__painelL.getValoresEscalonamento()[3]
             s = SegundaTransformacao()
-            s.escalonarCentro(objeto, sx, sy)
+            s.escalonarCentro(objeto, sx, sy, sz)
+            self.__renderizar()
+
+    # Ação de rotação eixo
+    def __rotacaoEixo(self):
+        pos = self.__painelL.getValoresRotacao()[0]
+        if pos == -1:
+            QMessageBox.question(self, 'Atenção', 'Selecione um objeto para ser Rotacionado.', QMessageBox.Ok)
+        else:
+            objeto = self.__objetos[pos]
+            angulo = self.__painelL.getValoresRotacao()[1]
+            s = SegundaTransformacao()
+            s.rotacionarEixoObjeto(objeto, angulo, self.__eixoAtual)
             self.__renderizar()
 
     # Ação de rotação do mundo
@@ -247,7 +282,7 @@ class Janela(QWidget):
             objeto = self.__objetos[pos]
             angulo = self.__painelL.getValoresRotacao()[1]
             s = SegundaTransformacao()
-            s.rotacionarCentroMundo(objeto, angulo)
+            s.rotacionarCentroMundo(objeto, angulo,)
             self.__renderizar()
 
     # Ação de rotação do centro de um objeto
@@ -259,7 +294,7 @@ class Janela(QWidget):
             objeto = self.__objetos[pos]
             angulo = self.__painelL.getValoresRotacao()[1]
             s = SegundaTransformacao()
-            s.rotacionarCentroObjeto(objeto, angulo)
+            s.rotacionarCentroObjeto(objeto, angulo, self.__eixoAtual)
             self.__renderizar()
 
     # Ação de rotação de um objeto em relação a um ponto
@@ -272,8 +307,9 @@ class Janela(QWidget):
             angulo = self.__painelL.getValoresRotacao()[1]
             x = self.__painelL.getValoresRotacao()[2]
             y = self.__painelL.getValoresRotacao()[3]
+            z = self.__painelL.getValoresRotacao()[4]
             s = SegundaTransformacao()
-            s.rotacionarPontoGraus(objeto, [x, y], angulo)
+            s.rotacionarPontoGraus(objeto, [x, y, z], angulo)
             self.__renderizar()
 
     # Rotaciona a Window
@@ -282,8 +318,20 @@ class Janela(QWidget):
         angulo = self.__painelL.getValoresRotacao()[1]
         if direcao == 0:
             angulo *= -1
-        self.__window.addAnguloZ(angulo)
+        # eixo
+        if self.__eixoAtual == 'X':
+            self.__window.addAnguloX(angulo)
+        elif self.__eixoAtual == 'Y':
+            self.__window.addAnguloY(angulo)
+        elif self.__eixoAtual == 'Z':
+            self.__window.addAnguloZ(angulo)
+        # renderizar
         self.__renderizar()
+
+    # Selecao eixo
+    def __selecaoEixo(self, eixo):
+        self.__eixoAtual = eixo
+        self.__painelL.setEixoAtual(eixo)
 
     # Acao de renderizar todos os objetos e eixos e a window
     def __renderizar(self):
