@@ -1,7 +1,8 @@
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-# from objeto.ponto3D import *
+from objeto.ponto3D import *
 from objeto.segmentoReta import *
+from numpy import matmul
 from math import sin, cos, radians, acos, degrees
 
 class Objeto3D():
@@ -10,15 +11,14 @@ class Objeto3D():
     __segmentosNormalizados = []
     __cor = (0,0,0)
 
+# 0 0 0 100 0 0 100 100 0 0 100 0
+# 0 0 0 100 0 0 100 0 100 0 0 100 0 100 100 0 100 0 0 0 0 0 0 100 0 100 100 100 100 100 100 0 100 100 100 100 100 100 0 100 0 0 100 100 0 0 100 0
+# 0 0 0 100 0 0 100 0 100 0 0 100 0 100 100 0 100 0 0 0 0 0 0 100 0 100 100 100 100 100 100 0 100 100 100 100 100 100 0 100 0 0 100 100 0 0 100 0 0 0 0 50 50 50
+
     # Construtor
     def __init__(self, nome, segmentos):
         self.__nome = nome
-        self.__segmentos = [s for s in segmentos]
         self.__segmentosFixos = [s for s in segmentos]
-
-    # Zera a lista de pontos
-    def clearPontos(self):
-        self.__pontos.clear()
 
     # Atualiza a lista de pontos
     def setSegmentos(self, novosSegmentos):
@@ -67,7 +67,6 @@ class Objeto3D():
     def dimensao(self):
         return 3
 
-    # 0 0 0 0 100 0 0 100 100 0 0 100 0 0 0 100 0 0 100 0 100 0 0 100 100 0 0 100 100 0 100 100 100 100 0 100 100 100 0 0 100 0 0 100 100 100 100 100
     # Desenha o objeto
     def desenhar(self, cena):
         if len(self.getSegmentos()) > 0:
@@ -77,6 +76,8 @@ class Objeto3D():
 
     # Retorna o vetor [x, y] da média dos pontos
     def getMediaSegmentosFixos(self):
+        if len(self.__segmentosFixos) == 0:
+            return [0, 0, 0]
         mediaX = 0
         mediaY = 0
         mediaZ = 0
@@ -128,24 +129,30 @@ class Objeto3D():
         self.__aplicarMat(matResult)
 
     # Rotaciona o objeto por determinados graus
-    def rotacionarGraus(self, graus):
+    def rotacionarCentroGraus(self, graus):
+        # eixo de rotacao
         centroObj = self.getMediaSegmentosFixos()
+        p2Obj = self.getSegmentosFixos()[0].P2()
+        p2 = [p2Obj.X(), p2Obj.Y(), p2Obj.Z()]
+        angulos = self.__findAnguloEixos(centroObj, p2)
+        # ida
         matTransParaPonto = self.__gerarMatrizTranslacao(-centroObj[0], -centroObj[1], -centroObj[2])
-        p2Obj = self.getPontosFixos()[0]
-        angulos = self.__findAnguloEixos(centroObj, [p2Obj.X(), p2Obj.Y(), p2Obj.Z()])
         matRotX = self.__gerarMatrizRotacaoX(angulos[0])
         matRotZ = self.__gerarMatrizRotacaoZ(angulos[2])
+        #rotacao
         matRotGraus = self.__gerarMatrizRotacaoY(graus)
-        matRotZrev = self.__gerarMatrizRotacaoZ(-angulos[2])
-        matRotXrev = self.__gerarMatrizRotacaoX(-angulos[0])
-        matTransDeVolta = self.__gerarMatrizTranslacao(centroObj[0], centroObj[1], centroObj[2])
+        # volta
+        matRotZvolt = self.__gerarMatrizRotacaoZ(-angulos[2])
+        matRotXvolt = self.__gerarMatrizRotacaoX(-angulos[0])
+        matTransVolt = self.__gerarMatrizTranslacao(centroObj[0], centroObj[1], centroObj[2])
+        # result
         matResult = self.__calcularMatrizResultante([matTransParaPonto,
                                                      matRotX,
                                                      matRotZ,
                                                      matRotGraus,
-                                                     matRotZrev,
-                                                     matRotXrev,
-                                                     matTransDeVolta])
+                                                     matRotZvolt,
+                                                     matRotXvolt,
+                                                     matTransVolt])
         self.__aplicarMat(matResult)
 
     # retorna lista com angulos do eixos do vetor dado por 2 pontos
@@ -155,14 +162,14 @@ class Objeto3D():
         angulos = [degrees( acos(k/size) ) for k in op]
         return angulos
 
-    # Retorna uma matriz 3x3 de translacao para x, y
+    # Retorna uma matriz 4x4 de translacao para x, y, z
     def __gerarMatrizTranslacao(self, x, y, z):
         return [[1, 0, 0, 0],
                 [0, 1, 0, 0],
                 [0, 0, 1, 0],
                 [x, y, z, 1]]
 
-    # Retorna uma matriz 3x3 de escalonamento por sX, sY
+    # Retorna uma matriz 4x4 de escalonamento por sX, sY, sZ
     def __gerarMatrizEscalonamento(self, sX, sY, sZ):
         return [[sX, 0, 0, 0],
                 [0, sY, 0, 0],
@@ -182,7 +189,7 @@ class Objeto3D():
         angulo = radians(graus)
         return [[cos(angulo), 0, -sin(angulo), 0],
                 [0, 1, 0, 0],
-                [sin(angulo), cos(angulo), 0, 0],
+                [sin(angulo), 0, cos(angulo), 0],
                 [0, 0, 0, 1]]
 
     # Retorna uma matriz 4x4 no eixo X de rotacao por graus
@@ -200,12 +207,29 @@ class Objeto3D():
             resultante = matmul(resultante, mat)
         return resultante
 
+    # Retorna os segmentos apos ser aplicada a matriz
+    def aplicarMatSegmentos(self, mat, segmentosEntrada):
+        segmentos = []
+        for s in segmentosEntrada:
+            p1 = s.P1()
+            p2 = s.P2()
+            vp1 = [p1.X(), p1.Y(), p1.Z(), 1]
+            vp2 = [p2.X(), p2.Y(), p2.Z(), 1]
+            novoP1 = matmul(vp1, mat)
+            novoP2 = matmul(vp2, mat)
+            ponto1 = Ponto3D(novoP1[0], novoP1[1], novoP1[2])
+            ponto2 = Ponto3D(novoP2[0], novoP2[1], novoP2[2])
+            segmentos.append( SegmentoReta(ponto1, ponto2))
+        return segmentos
+
     # Todos os pontos do objeto sao multiplicados pela matriz
     def __aplicarMat(self, mat):
-        pontos = self.getPontosFixos()
-        novosPontos = []
-        for p in pontos:
-            vp = [p.X(), p.Y(), p.Z(), 1]
-            novoP = matmul(vp, mat)
-            novosPontos.append(Ponto3D(novoP[0], novoP[1]))
-        self.setPontosFixos(novosPontos)
+        for s in self.__segmentosFixos:
+            p1 = s.P1()
+            p2 = s.P2()
+            vp1 = [p1.X(), p1.Y(), p1.Z(), 1]
+            vp2 = [p2.X(), p2.Y(), p2.Z(), 1]
+            novoP1 = matmul(vp1, mat)
+            novoP2 = matmul(vp2, mat)
+            s.setP1(Ponto3D(novoP1[0], novoP1[1], novoP1[2]))
+            s.setP2(Ponto3D(novoP2[0], novoP2[1], novoP2[2]))

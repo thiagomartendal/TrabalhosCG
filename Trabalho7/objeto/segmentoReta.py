@@ -25,19 +25,23 @@ class SegmentoReta:
     def P2(self):
         return self.__p2
 
+    def getPontos(self):
+        return [self.__p1, self.__p2]
+
     # Ponto médio de X
     def mediaX(self):
-        (self.__p2.X()+self.__p1.X())/2
+        return (self.__p2.X()+self.__p1.X())/2
 
     # Ponto médio de Y
     def mediaY(self):
-        (self.__p2.Y()+self.__p1.Y())/2
+        return (self.__p2.Y()+self.__p1.Y())/2
 
     # Ponto médio de Z
     def mediaZ(self):
-        (self.__p2.Z()+self.__p1.Z())/2
+        return (self.__p2.Z()+self.__p1.Z())/2
 
     # Desenha o segmento de reta
     def desenhar(self, cena, cor):
-        linha = QLineF(self.__p1.X(), self.__p1.Y(), self.__p2.X(), self.__p2.Y()) # dois pontos
-        cena().scene().addLine(linha, QPen(cor, 1, Qt.SolidLine))
+        if self.__p1 != None and self.__p2 != None:
+            linha = QLineF(self.__p1.X(), self.__p1.Y(), self.__p2.X(), self.__p2.Y()) # dois pontos
+            cena().scene().addLine(linha, QPen(cor, 1, Qt.SolidLine))

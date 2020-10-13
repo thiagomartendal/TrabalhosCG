@@ -104,28 +104,21 @@ class InserirObjeto(QDialog):
             self.hide()
 
     def __definirObjetos3D(self, nome, tmpC, multiPontos):
-        # if len(tmpC) % 2 != 0:
-        #     QMessageBox.question(self, 'Atenção', 'Digite um número par de coordenadas para formar os pontos.', QMessageBox.Ok)
-        # else:
-        segmentos = []
+        # pega os pontos do texto
         pontos = []
-        j = 0
-        i = 0
-        while i < len(tmpC):
+        for i in range(0, len(tmpC), 3):
             str1 = tmpC[i] if multiPontos else tmpC[i].text()
             str2 = tmpC[i+1] if multiPontos else tmpC[i+1].text()
             str3 = tmpC[i+2] if multiPontos else tmpC[i+2].text()
-            i += 3
-            p = Ponto3D(float(str1), float(str2), float(str3))
-            pontos.append(p)
-            j += 1
-            if j == 2:
-                segmento = SegmentoReta(pontos[0], pontos[1])
-                segmentos.append(segmento)
-                pontos.clear()
-                self.__sinalBotao = 0
-                j = 0
+            pontos.append(Ponto3D(float(str1), float(str2), float(str3)))
+        # cria os segmentos
+        segmentos = []
+        prev = pontos[-1]
+        for p in pontos:
+            segmentos.append( SegmentoReta(prev, p) )
+            prev = p
         self.__objeto = Objeto3D(nome, segmentos)
+        self.__sinalBotao = 0
         self.hide()
 
     # Ação do botão OK
