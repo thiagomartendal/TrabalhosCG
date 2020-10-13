@@ -59,9 +59,9 @@ class Viewport(QFrame):
      # Retorna uma lista com eixos X e Y do mundo em cinza
     def __eixos(self):
         tamanho = 100
-        eixoX = Objeto3D('EixoX', [SegmentoReta(Ponto3D(0,-tamanho,0), Ponto3D(0,tamanho,0))])
+        eixoX = Objeto3D('EixoX', [SegmentoReta(Ponto3D(-tamanho,0,0), Ponto3D(tamanho,0,0))])
         eixoX.setCor(255,150,150)
-        eixoY = Objeto3D('EixoY', [SegmentoReta(Ponto3D(-tamanho,0,0), Ponto3D(tamanho,0,0))])
+        eixoY = Objeto3D('EixoY', [SegmentoReta(Ponto3D(0,-tamanho,0), Ponto3D(0,tamanho,0))])
         eixoY.setCor(150,255,150)
         eixoZ = Objeto3D('EixoZ', [SegmentoReta(Ponto3D(0,0,-tamanho), Ponto3D(0,0,tamanho))])
         eixoZ.setCor(150,150,255)
