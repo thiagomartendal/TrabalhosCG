@@ -95,10 +95,12 @@ class DescritorOBJ:
 
     # Realiza a leitura do arquivo obj, criando os objetos
     def lerArquivo(self, str):
+        arquivoMtl = None
+        corR, corG, corB = (0,0,0)
         linhas = str.splitlines()
         tmpVertices = []
         resto = []
-        for l in linhas[1:]:
+        for l in linhas:
             tmpLinha = l.split(" ")
             if tmpLinha[0] == "mtllib":
                 arquivoMtl = tmpLinha[1]
@@ -114,7 +116,6 @@ class DescritorOBJ:
                 nome = tmpLinha[1]
                 obj = resto[i+1].split(" ")
                 if obj[0] == "usemtl":
-                    corR, corG, corB = (0,0,0)
                     corR, corG, corB = self.__descritorMTL.extrairCor(arquivoMtl, obj[1])
                     obj = resto[i+2].split(" ")
                 if obj[0] == 'w':
@@ -164,51 +165,43 @@ class DescritorOBJ:
                             i += 1
                             tmpLinha = resto[i].split(" ")
                 elif obj[0] == 'f':
-                    pontos = []
-                    for pos in range(1, len(obj)):
-                        tempV = obj[pos].split('/')[0]
-                        p = tmpVertices[int(tempV)-1].split(" ")
-                        p = [k.split("/")[0] for k in p]
-                        tmpPonto = Ponto3D(float(p[1]), float(p[2]), float(p[3]))
-                        pontos.append(tmpPonto)
-                    segmentos = []
-                    prev = pontos[-1]
-                    for p in pontos:
-                        seg = SegmentoReta(prev, p)
-                        segmentos.append(seg)
-                        prev = p
-                    obj3d = Objeto3D(nome, segmentos)
-                    obj3d.setCor(corR, corG, corB)
-                    self.__objetos.append(obj3d)
+                        segmentos = self.__faceParaSegmentos(obj, tmpVertices)
+                        obj3d = Objeto3D(nome, segmentos)
+                        obj3d.setCor(corR, corG, corB)
+                        self.__objetos.append(obj3d)
             elif tmpLinha[0] == 'g':
                 nome = tmpLinha[1]
                 corR, corG, corB = (0,0,0)
                 tmpLinha = resto[i+1].split(" ")
-                while tmpLinha[0] != 'g' and tmpLinha[0] != 'o':
+                while tmpLinha[0] != 'g' and tmpLinha[0] != 'o' and i+1 < len(resto):
                     if tmpLinha[0] == "usemtl":
                         corR, corG, corB = (0,0,0)
                         corR, corG, corB = self.__descritorMTL.extrairCor(arquivoMtl, tmpLinha[1])
                     if tmpLinha[0] == 'f':
-                        pontos = []
-                        obj = tmpLinha[1:]
-                        for pos in range(1, len(obj)):
-                            tempV = obj[pos].split('/')[0]
-                            p = tmpVertices[int(tempV)-1].split(" ")
-                            p = [k.split("/")[0] for k in p]
-                            tmpPonto = Ponto3D(float(p[1]), float(p[2]), float(p[3]))
-                            pontos.append(tmpPonto)
-                        segmentos = []
-                        prev = pontos[-1]
-                        for p in pontos:
-                            seg = SegmentoReta(prev, p)
-                            segmentos.append(seg)
-                            prev = p
+                        segmentos = self.__faceParaSegmentos(tmpLinha[1:], tmpVertices)
                         obj3d = Objeto3D(nome, segmentos)
                         obj3d.setCor(corR, corG, corB)
                         self.__objetos.append(obj3d)
-
-                    tmpLinha = resto[i+1].split(" ")
+                    # proxima linha no while
                     i += 1
+                    tmpLinha = resto[i+1].split(" ")
+
+    # Transforma a face em um objeto3D
+    def __faceParaSegmentos(self, obj, tmpVertices):
+        pontos = []
+        for pos in range(1, len(obj)):
+            tempV = obj[pos].split('/')[0]
+            p = tmpVertices[int(tempV)-1].split(" ")
+            p = [k.split("/")[0] for k in p]
+            tmpPonto = Ponto3D(float(p[1]), float(p[2]), float(p[3]))
+            pontos.append(tmpPonto)
+        segmentos = []
+        prev = pontos[-1]
+        for p in pontos:
+            seg = SegmentoReta(prev, p)
+            segmentos.append(seg)
+            prev = p
+        return segmentos
 
     # Escreve uma curva do tipo bezier no arquivo obj
     def __escreverCurvaBezier(self, objeto, descricaoObj):

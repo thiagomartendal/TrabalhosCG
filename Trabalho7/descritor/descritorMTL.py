@@ -39,6 +39,8 @@ class DescritorMTL:
 
     # Retorna a cor (r,g,b) do Kd de um determinado material
     def extrairCor(self, nomeArquivo, nomeMaterial):
+        if nomeArquivo == None or nomeMaterial == None:
+            return (0,0,0)
         with open(nomeArquivo, 'r') as f:
             materiais = f.read().split("newmtl ")[1:]
             r, g, b = (0,0,0)
