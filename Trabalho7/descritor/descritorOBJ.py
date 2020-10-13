@@ -186,7 +186,7 @@ class DescritorOBJ:
                     i += 1
                     tmpLinha = resto[i+1].split(" ")
 
-    # Transforma a face em um objeto3D
+    # Transforma a face em uma lista de segmentos
     def __faceParaSegmentos(self, obj, tmpVertices):
         pontos = []
         for pos in range(1, len(obj)):
