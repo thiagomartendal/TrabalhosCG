@@ -42,13 +42,13 @@ class Window():
         self.__Y2 = y
         self.__calculoCentro()
 
-    def setCentro(self, centro):
-        self.__centro = centro
-
-    # Altera a coordenada X2
+    # Altera a coordenada Z
     def setZ(self, z):
         self.__Z = z
         self.__calculoCentro()
+
+    def setCentro(self, centro):
+        self.__centro = centro
 
     # Adiciona graus ao angulo da window
     def addAnguloZ(self, angulo):
@@ -104,7 +104,8 @@ class Window():
         
     # Calcula o centro da window
     def centro3D(self):
-        return [(self.__X1+self.__X2)/2, (self.__Y1+self.__Y2), self.__Z]
+        #return [(self.__X1+self.__X2), (self.__Y1+self.__Y2), self.__Z]
+        return [(self.__X1+self.__X2)/2, (self.__Y1+self.__Y2)/2, self.__Z]
 
     # Retorna o tamanho da window
     def dimensao(self):

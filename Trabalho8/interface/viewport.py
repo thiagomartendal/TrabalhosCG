@@ -5,6 +5,7 @@ from interface.clipping import *
 from objeto.linha import *
 from objeto.poligono import *
 from objeto.objeto3D import *
+from transformacao.projecao import *
 
 class Viewport(QFrame):
     __coordenadas = [] # Coordenadas do viewport

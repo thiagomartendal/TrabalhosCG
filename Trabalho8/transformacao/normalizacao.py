@@ -11,7 +11,7 @@ class Normalizacao:
     def __init__(self, window, viewportCoordenadas):
         self.__window = window
         self.__viewportCoordenadas = viewportCoordenadas
-        self.proj = Projecao(window)
+        self.__proj = Projecao(self.__window)
 
     # Ajusta os PontosNormalizados do objeto para a posicao atual da window
     def normalizar(self, objeto):
@@ -19,9 +19,8 @@ class Normalizacao:
             pontos = self.__normalizacao2D(objeto)
             objeto.setPontosNormalizados(pontos)
         elif objeto.dimensao() == 3:
-            #matProj = self.proj.projecaoParalelaOrtogonal()
-            matProj = self.proj.projecaoPerspectiva()
-            segmentosProj = objeto.aplicarMatSegmentos(matProj, objeto.getSegmentosFixos())
+            #segmentosProj = self.__proj.segmentosProjParalelaOrtogonal(objeto)
+            segmentosProj = self.__proj.segmentosProjPerspectiva(objeto)
             segmentosNorm = self.__normalizacao3D(objeto, segmentosProj)
             objeto.setSegmentosNormalizados(segmentosNorm)
 
@@ -39,7 +38,6 @@ class Normalizacao:
     def __normalizacao3D(self, objeto, segmentosEntrada):
         segmentos = []
         for segmento in segmentosEntrada:
-            #if segmento.P1().Z() > 0:
             matrizPonto1 = [segmento.P1().X(), segmento.P1().Y(), 1]
             matrizPonto2 = [segmento.P2().X(), segmento.P2().Y(), 1]
             matrizRes1 = matmul(matrizPonto1, self.__matrizGeral3D())
