@@ -69,29 +69,6 @@ class Projecao():
             p2 = s.P2()
             if p1.Z() >= wz and p2.Z() >= wz:
                 segmentosFrenteWindow.append(s)
-            elif p1.Z() < wz and p2.Z() < wz:
-                continue
-            else:
-                # menor z fica como p1
-                if p1.Z() > p2.Z():
-                    trocados = True
-                    tempP1 = p2
-                    tempP2 = p1
-                else:
-                    trocados = False
-                    tempP1 = p1
-                    tempP2 = p2
-                #
-                t = (wz - tempP1.Z()) / (tempP1.Z() - tempP2.Z())
-                x = tempP1.X() + ( (tempP2.X() - tempP1.X()) * t )
-                y = tempP1.Y() + ( (tempP2.Y() - tempP1.Y()) * t )
-                novoP = Ponto3D(x, y, wz)
-                if trocados:
-                    novoS = SegmentoReta(p1, novoP)
-                else:
-                    novoS = SegmentoReta(novoP, p2)
-
-                segmentosFrenteWindow.append(novoS)
         return segmentosFrenteWindow
 
 
