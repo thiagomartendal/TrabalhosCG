@@ -57,6 +57,7 @@ class Janela(QWidget):
         self.__menu.menuBSpline2D().triggered.connect(self.__inserirBSpline2D)
         self.__menu.menuPoligo3D().triggered.connect(self.__inserirModeloArame)
         self.__menu.menuBezier().triggered.connect(self.__inserirSuperficieBezier)
+        self.__menu.menuSpline().triggered.connect(self.__inserirSuperficieSpline)
 
     # Abrir Obj
     def __abrir(self):
@@ -143,7 +144,16 @@ class Janela(QWidget):
 
     # Dialogo para inserção de superfície bezier
     def __inserirSuperficieBezier(self):
+        self.__inserirSuperficie(True)
+
+    # Dialogo para inserção de superfície Spline
+    def __inserirSuperficieSpline(self):
+        self.__inserirSuperficie(False)
+
+    # Dialogo para inserção de superfície
+    def __inserirSuperficie(self, bezier):
         inserirPoligono = InserirObjeto(6)
+        inserirPoligono.setSuperficieBezier(bezier)
         inserirPoligono.exec_()
         if inserirPoligono.getSinal() == 0:
             objeto = inserirPoligono.getObj()

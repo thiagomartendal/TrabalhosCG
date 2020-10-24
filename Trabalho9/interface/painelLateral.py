@@ -234,21 +234,17 @@ class PainelLateral(QScrollArea):
     # Atualiza a lista de objetos criados
     def atualizarLista(self, objetos):
         self.__listaObjetos.clear()
+        nomeTipos = {
+                    0: "Polígono",
+                    1: "Linha",
+                    2: "Ponto",
+                    3: "CurvaBezier",
+                    4: "BSpline",
+                    5: "Modelo de Arame",
+                    6: "Superfície Bicúbica"
+                     }
         for objeto in objetos:
-            if objeto.tipo() == 0:
-                nome = objeto.getNome()+": Polígono"
-            elif objeto.tipo() == 1:
-                nome = objeto.getNome()+": Linha"
-            elif objeto.tipo() == 2:
-                nome = objeto.getNome()+": Ponto"
-            elif objeto.tipo() == 3:
-                nome = objeto.getNome()+": CurvaBezier"
-            elif objeto.tipo() == 4:
-                nome = objeto.getNome()+": BSpline"
-            elif objeto.tipo() == 5:
-                nome = objeto.getNome()+": Modelo de Arame"
-            elif objeto.tipo() == 5:
-                nome = objeto.getNome()+": Superfície Bicúbica"
+            nome = objeto.getNome()+": "+nomeTipos[objeto.tipo()]
             self.__listaObjetos.addItem(nome)
 
     # Seleciona o índice do objeto selecionado
@@ -274,7 +270,10 @@ class PainelLateral(QScrollArea):
 
     # Retorna os valores da translação
     def getValoresTranslacao(self):
-        return [self.__posItem, float(self.__entradaDx.text()), float(self.__entradaDy.text()), float(self.__entradaDz.text())]
+        dx = self.__entradaDx.text() if self.__entradaDx.text() else 0
+        dy = self.__entradaDy.text() if self.__entradaDy.text() else 0
+        dz = self.__entradaDz.text() if self.__entradaDz.text() else 0
+        return [self.__posItem, float(dx), float(dy), float(dz)]
 
     # Retorna os botões de controle do escalonamento
     def getBotoesEscalonamento(self):
@@ -282,7 +281,10 @@ class PainelLateral(QScrollArea):
 
     # Retorna os valores do escalonamento
     def getValoresEscalonamento(self):
-        return [self.__posItem, float(self.__entradaSx.text()), float(self.__entradaSy.text()), float(self.__entradaSz.text())]
+        sx = self.__entradaSx.text() if self.__entradaSx.text() else 1
+        sy = self.__entradaSy.text() if self.__entradaSy.text() else 1
+        sz = self.__entradaSz.text() if self.__entradaSz.text() else 1
+        return [self.__posItem, float(sx), float(sy), float(sz)]
 
     # Retorna os botões de controle da rotação
     def getBotoesRotacao(self):
@@ -294,14 +296,10 @@ class PainelLateral(QScrollArea):
         x = self.__entradaX.text()
         y = self.__entradaY.text()
         z = self.__entradaZ.text()
-        if angulo == "":
-            angulo = 0
-        if x == "":
-            x = 0
-        if y == "":
-            y = 0
-        if z == "":
-            z = 0
+        angulo = angulo if angulo else 0
+        x = x if x else 0
+        y = y if y else 0
+        z = z if z else 0
         return [self.__posItem, float(angulo), float(x), float(y), float(z)]
 
     # Retorna os botões de selecao do Eixo

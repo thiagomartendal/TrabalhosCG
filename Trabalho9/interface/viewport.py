@@ -60,16 +60,16 @@ class Viewport(QFrame):
      # Retorna uma lista com eixos X e Y do mundo em cinza
     def __eixos(self):
         tamanho = 100
-        eixoX1 = ModeloArame('EixoX1', [SegmentoReta(Ponto3D(-tamanho,0,0), Ponto3D(0,0,0))])
-        eixoX2 = ModeloArame('EixoX2', [SegmentoReta(Ponto3D(0,0,0), Ponto3D(tamanho,0,0))])
+        eixoX1 = ModeloArame('EixoX1', [Ponto3D(-tamanho,0,0), Ponto3D(0,0,0)])
+        eixoX2 = ModeloArame('EixoX2', [Ponto3D(0,0,0), Ponto3D(tamanho,0,0)])
         eixoX1.setCor(255,150,150)
         eixoX2.setCor(255,150,150)
-        eixoY1 = ModeloArame('EixoY1', [SegmentoReta(Ponto3D(0,-tamanho,0), Ponto3D(0,0,0))])
-        eixoY2 = ModeloArame('EixoY2', [SegmentoReta(Ponto3D(0,0,0), Ponto3D(0,tamanho,0))])
+        eixoY1 = ModeloArame('EixoY1', [Ponto3D(0,-tamanho,0), Ponto3D(0,0,0)])
+        eixoY2 = ModeloArame('EixoY2', [Ponto3D(0,0,0), Ponto3D(0,tamanho,0)])
         eixoY1.setCor(150,255,150)
         eixoY2.setCor(150,255,150)
-        eixoZ1 = ModeloArame('EixoZ1', [SegmentoReta(Ponto3D(0,0,-tamanho), Ponto3D(0,0,0))])
-        eixoZ2 = ModeloArame('EixoZ2', [SegmentoReta(Ponto3D(0,0,0), Ponto3D(0,0,tamanho))])
+        eixoZ1 = ModeloArame('EixoZ1', [Ponto3D(0,0,-tamanho), Ponto3D(0,0,0)])
+        eixoZ2 = ModeloArame('EixoZ2', [Ponto3D(0,0,0), Ponto3D(0,0,tamanho)])
         eixoZ1.setCor(150,150,255)
         eixoZ2.setCor(150,150,255)
         return [eixoX1, eixoX2, eixoY1, eixoY2, eixoZ1, eixoZ2]

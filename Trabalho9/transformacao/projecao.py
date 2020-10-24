@@ -1,14 +1,13 @@
-from numpy import matmul
-from math import radians, cos, sin
 from objeto.estruturaPonto import *
-from objeto.ponto3D import *
-from objeto.segmentoReta import *
+from objeto.modeloArame import *
+from numpy import matmul
 
 class Projecao:
 
     # Construtor
     def __init__(self, window):
         self.__window = window
+        self.__obj = ModeloArame('', [])
 
     def segmentosProjParalelaOrtogonal(self, objeto):
         segmentosFixos = objeto.getSegmentosFixos()
@@ -17,18 +16,18 @@ class Projecao:
 
     def segmentosProjPerspectiva(self, objeto):
         segmentosFixos = objeto.getSegmentosFixos()
-        segmentosProj = objeto.aplicarMatSegmentos(self.__matPerspectiva(), objeto.getSegmentosFixos())
+        segmentosProj = objeto.aplicarMatSegmentos(self.__matPerspectiva(), segmentosFixos)
         segmentosProj = self.__segmentosFrenteWindow(segmentosProj)
         segmentosProj = objeto.aplicarMatSegmentos(self.__matPerpectiva(), segmentosProj)
         return segmentosProj
 
     def __matParalelaOrtogonal(self):
         wcX, wcY, wcZ = self.__window.centro3D()
-        matTransOrig = self.__gerarMatrizTranslacao(-wcX, -wcY, -wcZ)
-        matRotXAlin = self.gerarMatrizRotacaoX(-self.__window.getAnguloX())
-        matRotYAlin = self.gerarMatrizRotacaoY(-self.__window.getAnguloY())
-        matRot = self.gerarMatrizRotacaoY(-30)
-        matResult = self.calcularMatrizResultante([
+        matTransOrig = self.__obj.gerarMatrizTranslacao(-wcX, -wcY, -wcZ)
+        matRotXAlin = self.__obj.gerarMatrizRotacaoX(-self.__window.getAnguloX())
+        matRotYAlin = self.__obj.gerarMatrizRotacaoY(-self.__window.getAnguloY())
+        matRot = self.__obj.gerarMatrizRotacaoY(-30)
+        matResult = self.__obj.calcularMatrizResultante([
                                                     matTransOrig,
                                                     matRotXAlin,
                                                     matRotYAlin,
@@ -38,10 +37,10 @@ class Projecao:
 
     def __matPerspectiva(self):
         copX, copY, copZ = self.posCOP()
-        matTransOrig = self.__gerarMatrizTranslacao(-copX, -copY, -copZ)
-        matRotXAlin = self.gerarMatrizRotacaoX(-self.__window.getAnguloX())
-        matRotYAlin = self.gerarMatrizRotacaoY(-self.__window.getAnguloY())
-        matResult = self.calcularMatrizResultante([
+        matTransOrig = self.__obj.gerarMatrizTranslacao(-copX, -copY, -copZ)
+        matRotXAlin = self.__obj.gerarMatrizRotacaoX(-self.__window.getAnguloX())
+        matRotYAlin = self.__obj.gerarMatrizRotacaoY(-self.__window.getAnguloY())
+        matResult = self.__obj.calcularMatrizResultante([
                                                     matTransOrig,
                                                     matRotXAlin,
                                                     matRotYAlin
@@ -71,54 +70,15 @@ class Projecao:
                 segmentosFrenteWindow.append(s)
         return segmentosFrenteWindow
 
-
-    # Retorna uma matriz 4x4 de translacao para x, y, z
-    def __gerarMatrizTranslacao(self, x, y, z):
-        return [[1, 0, 0, 0],
-                [0, 1, 0, 0],
-                [0, 0, 1, 0],
-                [x, y, z, 1]]
-
-    # Retorna uma matriz 4x4 no eixo Z de rotacao por graus
-    def gerarMatrizRotacaoZ(self, graus):
-        angulo = radians(graus)
-        return [[cos(angulo), sin(angulo), 0, 0],
-                [-sin(angulo), cos(angulo), 0, 0],
-                [0, 0, 1, 0],
-                [0, 0, 0, 1]]
-
-    # Retorna uma matriz 4x4 no eixo Y de rotacao por graus
-    def gerarMatrizRotacaoY(self, graus):
-        angulo = radians(graus)
-        return [[cos(angulo), 0, -sin(angulo), 0],
-                [0, 1, 0, 0],
-                [sin(angulo), 0, cos(angulo), 0],
-                [0, 0, 0, 1]]
-
-    # Retorna uma matriz 4x4 no eixo X de rotacao por graus
-    def gerarMatrizRotacaoX(self, graus):
-        angulo = radians(graus)
-        return [[1, 0, 0, 0],
-                [0, cos(angulo), sin(angulo), 0],
-                [0, -sin(angulo), cos(angulo), 0],
-                [0, 0, 0, 1]]
-
-    # Retorna a matriz resultante da multiplicacao da lista
-    def calcularMatrizResultante(self, matrizes):
-        resultante = matrizes.pop(0)
-        for mat in matrizes:
-            resultante = matmul(resultante, mat)
-        return resultante
-
     # Vetor com a participacao de cada eixo no movimento
     def participacaoEixo(self, x, y, z, qtd):
         x *= qtd
         y *= qtd
         z *= qtd
         matQtd = [x, y, z, 1]
-        mrx = self.gerarMatrizRotacaoX(self.__window.getAnguloX())
-        mry = self.gerarMatrizRotacaoY(self.__window.getAnguloY())
-        mrz = self.gerarMatrizRotacaoZ(self.__window.getAnguloZ())
-        mresult = self.calcularMatrizResultante([mrx, mry, mrz])
+        mrx = self.__obj.gerarMatrizRotacaoX(self.__window.getAnguloX())
+        mry = self.__obj.gerarMatrizRotacaoY(self.__window.getAnguloY())
+        mrz = self.__obj.gerarMatrizRotacaoZ(self.__window.getAnguloZ())
+        mresult = self.__obj.calcularMatrizResultante([mrx, mry, mrz])
         participacao = matmul(matQtd, mresult)
         return participacao[:-1]

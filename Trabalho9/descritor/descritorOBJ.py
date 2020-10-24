@@ -1,3 +1,4 @@
+from descritor.descritorMTL import *
 from objeto.estruturaPonto import *
 from objeto.poligono import *
 from objeto.linha import *
@@ -5,8 +6,8 @@ from objeto.ponto import *
 from objeto.curva2D import *
 from objeto.modeloArame import *
 from objeto.ponto3D import *
+from objeto.superficieBicubica import *
 from objeto.segmentoReta import *
-from descritor.descritorMTL import *
 
 class DescritorOBJ:
 
@@ -41,16 +42,20 @@ class DescritorOBJ:
     def __escreverOBJ3D(self, objeto):
         descricaoObj = "o "+objeto.getNome() +"\n"
         descricaoObj += "usemtl "+ self.__descritorMTL.material(objeto.getCor()) +"\n"
-        if objeto.tipo() == 5: # poligono 3d
+        if objeto.tipo() == 5: # poligono 3D
             descricaoObj += "f "
-        segmentos = objeto.getSegmentosFixos()
-        for i in range(len(segmentos)):
-            s = segmentos[i]
-            self.__vertices.append(s.P2())
-            descricaoObj += str(len(self.__vertices))
-            if i != len(segmentos)-1:
-                descricaoObj += " "
-        return descricaoObj
+            segmentos = objeto.getSegmentosFixos()
+            for i in range(len(segmentos)):
+                s = segmentos[i]
+                self.__vertices.append(s.P2())
+                descricaoObj += str(len(self.__vertices)) + " "
+        elif objeto.tipo() == 6: # superficie bicubica
+            descricaoObj += "surf "
+            descricaoObj += str(objeto.getPrecisao()) +" "
+            for p in objeto.getPontosControle():
+                self.__vertices.append(p)
+                descricaoObj += str(len(self.__vertices)) + " "
+        return descricaoObj[:-1]
 
     def __escreverOBJ2D(self, objeto):
         descricaoObj = "o "+objeto.getNome() +"\n"
@@ -66,10 +71,8 @@ class DescritorOBJ:
         for i in range(len(objeto.getPontosFixos())):
             ponto = objeto.getPontosFixos()[i]
             self.__vertices.append(ponto)
-            descricaoObj += str(len(self.__vertices))
-            if i != len(objeto.getPontosFixos())-1:
-                descricaoObj += " "
-        return descricaoObj
+            descricaoObj += str(len(self.__vertices)) + " "
+        return descricaoObj[:-1]
 
     # Escreve a lista de objetos e a window no arquivo obj
     def escreverArquivo(self):
@@ -96,7 +99,6 @@ class DescritorOBJ:
     # Realiza a leitura do arquivo obj, criando os objetos
     def lerArquivo(self, str):
         arquivoMtl = None
-        corR, corG, corB = (0,0,0)
         linhas = str.splitlines()
         tmpVertices = []
         resto = []
@@ -111,9 +113,9 @@ class DescritorOBJ:
         for i in range(len(resto)):
             tmpLinha = resto[i].split(" ")
             nome = ""
-            cor = None
             if tmpLinha[0] == 'o':
                 nome = tmpLinha[1]
+                corR, corG, corB = (0,0,0)
                 obj = resto[i+1].split(" ")
                 if obj[0] == "usemtl":
                     corR, corG, corB = self.__descritorMTL.extrairCor(arquivoMtl, obj[1])
@@ -166,9 +168,19 @@ class DescritorOBJ:
                             tmpLinha = resto[i].split(" ")
                 elif obj[0] == 'f':
                         segmentos = self.__faceParaSegmentos(obj, tmpVertices)
-                        obj3d = Objeto3D(nome, segmentos)
+                        obj3d = ModeloArame(nome, segmentos)
                         obj3d.setCor(corR, corG, corB)
                         self.__objetos.append(obj3d)
+                elif obj[0] == 'surf':
+                    precisao = float(obj[1])
+                    pontosControle = []
+                    for k in range(2, len(obj)):
+                        p = tmpVertices[int(obj[k])-1].split(" ")
+                        pontosControle.append(Ponto3D(float(p[1]), float(p[2]), float(p[3])))
+                    if len(pontosControle) % 16 == 0:
+                        superficie = SuperficieBicubica(nome, pontosControle, precisao)
+                        superficie.setCor(corR, corG, corB)
+                        self.__objetos.append(superficie)
             elif tmpLinha[0] == 'g':
                 nome = tmpLinha[1]
                 corR, corG, corB = (0,0,0)
@@ -179,7 +191,7 @@ class DescritorOBJ:
                         corR, corG, corB = self.__descritorMTL.extrairCor(arquivoMtl, tmpLinha[1])
                     if tmpLinha[0] == 'f':
                         segmentos = self.__faceParaSegmentos(tmpLinha[1:], tmpVertices)
-                        obj3d = Objeto3D(nome, segmentos)
+                        obj3d = ModeloArame(nome, segmentos)
                         obj3d.setCor(corR, corG, corB)
                         self.__objetos.append(obj3d)
                     # proxima linha no while
@@ -211,4 +223,4 @@ class DescritorOBJ:
             self.__vertices.append(p)
             descricaoObj += " "+str(len(self.__vertices))
         descricaoObj += "\n"+"end"
-        return descricaoObj
+        return descricaoObj 

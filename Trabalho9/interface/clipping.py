@@ -41,6 +41,7 @@ class Clipping:
                     objeto.setPontos(novos)
                 else:
                     objeto.clearPontos()
+        # dimensao 3
         else:
             for s in objeto.getSegmentos():
                 p1 = s.P1()

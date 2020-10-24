@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import *
 from interface.inserir.montarPoligono import *
 from interface.inserir.montarReta import *
 from interface.inserir.montarPonto import *
+from interface.inserir.montarSuperficie import *
 from objeto.poligono import *
 from objeto.linha import *
 from objeto.ponto import *
@@ -14,7 +15,8 @@ from objeto.segmentoReta import *
 from objeto.superficieBicubica import *
 
 class InserirObjeto(QDialog):
-    __coordenadas = [] # Coordenadas para formar pontos do objeto
+    __coordenadas = []  # Coordenadas para formar pontos do objeto
+    __spfBezier = True  # superficie do tipo bezier
 
     # Construtor
     def __init__(self, tipo, parent=None):
@@ -46,12 +48,19 @@ class InserirObjeto(QDialog):
             mspl = MontarPoligono()
             layout.addWidget(mspl)
             self.__coordenadas = mspl.coordenadas()
-        elif self.__tipo == 5 or self.__tipo == 6:
+        elif self.__tipo == 5:
             self.setFixedSize(500, 250)
             mpol3D = MontarPoligono()
             layout.addWidget(mpol3D)
             layout.addWidget(QLabel("A cada 3 coordenadas tem-se um ponto."))
             self.__coordenadas = mpol3D.coordenadas()
+        elif self.__tipo == 6:
+            self.setFixedSize(500, 380)
+            mspf3D = MontarSuperficie()
+            layout.addWidget(mspf3D)
+            layout.addWidget(QLabel("A cada 3 coordenadas tem-se um ponto."))
+            self.__coordenadas = mspf3D.coordenadas()
+            self.__precisao = mspf3D.precisao()
         self.__botoes(layout)
 
     # Método par nomear o objeto
@@ -104,6 +113,9 @@ class InserirObjeto(QDialog):
             self.__sinalBotao = 0
             self.hide()
 
+    def setSuperficieBezier(self, bezier):
+        self.__spfBezier = bezier
+
     def __definirObjetos3D(self, nome, tmpC, multiPontos):
         # pega os pontos do texto
         pontos = []
@@ -112,37 +124,34 @@ class InserirObjeto(QDialog):
             str2 = tmpC[i+1] if multiPontos else tmpC[i+1].text()
             str3 = tmpC[i+2] if multiPontos else tmpC[i+2].text()
             pontos.append(Ponto3D(float(str1), float(str2), float(str3)))
-        # cria os segmentos
-        segmentos = []
-        prev = pontos[-1]
-        for p in pontos:
-            segmentos.append( SegmentoReta(prev, p) )
-            prev = p
-        self.__objeto = ModeloArame(nome, segmentos)
+        # para cada tipo de objeto
+        if self.__tipo == 5:
+            self.__objeto = ModeloArame(nome, pontos)
+        elif self.__tipo == 6:
+            if len(pontos) % 16 != 0:
+                QMessageBox.question(self, 'Atenção', 'São necessários 16 pontos para formar cada superfície.', QMessageBox.Ok)
+                return
+            else:
+                precisao = self.__precisao[0].text()
+                precisao = float(precisao) if precisao else None
+                self.__objeto = SuperficieBicubica(nome, pontos, precisao, self.__spfBezier)
         self.__sinalBotao = 0
         self.hide()
 
     # Ação do botão OK
     def __ok(self):
         nome = self.__nomeObjeto.text()
-        multiPontos = self.__tipo == 0 or self.__tipo == 3 or self.__tipo == 4  or self.__tipo == 5 or self.__tipo == 6
+        multiPontos = self.__tipo == 0 or self.__tipo >= 3
         tmpC = []
         if multiPontos:
-            tmpC = self.__coordenadas[0].text().split(' ')
+            tmpC = self.__coordenadas[0].toPlainText().split(' ')
+            if len(tmpC) < 2:
+                QMessageBox.question(self, 'Atenção', 'São necessários mais pontos para criar um objeto.', QMessageBox.Ok)
+                return
         else:
             tmpC = self.__coordenadas
-        if self.__tipo == 5:
+        if self.__tipo >= 5:
             self.__definirObjetos3D(nome, tmpC, multiPontos)
-        elif self.__tipo == 6:
-            pontos3D = []
-            for i in range(0, len(tmpC), 3):
-                str1 = tmpC[i] if multiPontos else tmpC[i].text()
-                str2 = tmpC[i+1] if multiPontos else tmpC[i+1].text()
-                str3 = tmpC[i+2] if multiPontos else tmpC[i+2].text()
-                pontos3D.append(Ponto3D(float(str1), float(str2), float(str3)))
-            self.__objeto = SuperficieBicubica(nome, pontos3D)
-            self.__sinalBotao = 0
-            self.hide()
         else:
             self.__definirObjetos2D(nome, tmpC, multiPontos)
 
