@@ -144,7 +144,13 @@ class InserirObjeto(QDialog):
         multiPontos = self.__tipo == 0 or self.__tipo >= 3
         tmpC = []
         if multiPontos:
-            tmpC = self.__coordenadas[0].toPlainText().split(' ')
+            if self.__tipo == 6:
+                tmpC = self.__coordenadas[0].toPlainText()
+            else:
+                tmpC = self.__coordenadas[0].text()
+            tmpC = tmpC.replace('\n', ' ')
+            tmpC = tmpC.replace('  ', ' ')
+            tmpC = tmpC.split(' ')
             if len(tmpC) < 2:
                 QMessageBox.question(self, 'Atenção', 'São necessários mais pontos para criar um objeto.', QMessageBox.Ok)
                 return

@@ -10,6 +10,7 @@ class MontarSuperficie(QFrame):
         layoutPainel.addWidget(QLabel("Coordenadas"))
 
         input = QTextEdit()
+        input.setText("-250 -300 0 -250 -150 200 -250 0 150 -250 200 0 -100 -175 100 -150 0 250 -100 100 250 -50 -300 100 50 -150 100 150 0 250 100 200 225 50 -300 125 250 -300 0 300 -150 200 300 0 150 250 150 0")
         input.setMinimumSize(input.width(), 80)
         layoutPainel.addWidget(input)
         layoutPainel.addWidget(QLabel("Separe cada coordenada com espaços."))
