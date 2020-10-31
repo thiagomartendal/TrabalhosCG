@@ -65,8 +65,66 @@ class SuperficieBicubica(Objeto3D):
                     prev = p
         return segmentos
 
+    # Define a dimensão da matriz
+    def __definirDimensao(self, qtdPontos):
+        if qtdPontos >= 1 and qtdPontos <= 16:
+            return 4
+        elif qtdPontos >= 17 and qtdPontos <= 25:
+            return 5
+        elif qtdPontos >= 26 and qtdPontos <= 36:
+            return 6
+        elif qtdPontos >= 37 and qtdPontos <= 49:
+            return 7
+        elif qtdPontos >= 50 and qtdPontos <= 64:
+            return 8
+        elif qtdPontos >= 65 and qtdPontos <= 81:
+            return 9
+        elif qtdPontos >= 82 and qtdPontos <= 100:
+            return 10
+        elif qtdPontos >= 101 and qtdPontos <= 121:
+            return 11
+        elif qtdPontos >= 122 and qtdPontos <= 144:
+            return 12
+        elif qtdPontos >= 145 and qtdPontos <= 169:
+            return 13
+        elif qtdPontos >= 170 and qtdPontos <= 196:
+            return 14
+        elif qtdPontos >= 197 and qtdPontos <= 225:
+            return 15
+        elif qtdPontos >= 226 and qtdPontos <= 256:
+            return 16
+        elif qtdPontos >= 257 and qtdPontos <= 289:
+            return 17
+        elif qtdPontos >= 290 and qtdPontos <= 324:
+            return 18
+        elif qtdPontos >= 325 and qtdPontos <= 361:
+            return 19
+        elif qtdPontos >= 362 and qtdPontos <= 400:
+            return 20
+        return -1
+
+    # Monta os coeficientes nas matrizes
+    def __montarMatrizes(self, pontos):
+        n = self.__definirDimensao(len(pontos))
+        Gx = [[1 for x in range(n)] for y in range(n)]
+        Gy = [[1 for x in range(n)] for y in range(n)]
+        Gz = [[1 for x in range(n)] for y in range(n)]
+        k = 0
+        for i in range(n):
+            for j in range(n):
+                if k < len(pontos):
+                    Gx[i][j] = pontos[k].X()
+                    Gy[i][j] = pontos[k].Y()
+                    Gz[i][j] = pontos[k].Z()
+                    k += 1
+        return Gx, Gy, Gz
+
     # Retorna uma lista de segmentos da superficie bicubica Spline com base na precisao
     def __calcSpline(self, pontosControle, deltaS, deltaT):
+        x, y, z = self.__montarMatrizes(pontosControle)
+        print('Gx:', x)
+        print('Gy:', y)
+        print('Gz:', z)
         segmentos = []
         M = self.__transformacaoSpline()
         MT = transpose(M)

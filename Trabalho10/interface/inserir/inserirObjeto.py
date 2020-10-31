@@ -137,7 +137,7 @@ class InserirObjeto(QDialog):
         if self.__tipo == 5:
             self.__objeto = ModeloArame(nome, pontos)
         elif self.__tipo == 6:
-            if len(pontos) % 16 != 0:
+            if len(pontos) < 16:
                 QMessageBox.question(self, 'Atenção', 'São necessários 16 pontos para formar cada superfície.', QMessageBox.Ok)
                 return
             else:
