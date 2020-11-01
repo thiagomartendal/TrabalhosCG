@@ -152,11 +152,11 @@ class Janela(QWidget):
 
     # Dialogo para inserção de superfície
     def __inserirSuperficie(self, bezier):
-        inserirPoligono = InserirObjeto(6)
-        inserirPoligono.setSuperficieBezier(bezier)
-        inserirPoligono.exec_()
-        if inserirPoligono.getSinal() == 0:
-            objeto = inserirPoligono.getObj()
+        inserirSuperficie = InserirObjeto(6)
+        inserirSuperficie.setSuperficieBezier(bezier)
+        inserirSuperficie.exec_()
+        if inserirSuperficie.getSinal() == 0:
+            objeto = inserirSuperficie.getObj()
             self.__objetos.append(objeto)
             self.__renderizar()
             self.__painelL.atualizarLista(self.__objetos)

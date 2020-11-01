@@ -6,10 +6,17 @@ class SuperficieBicubica(Objeto3D):
     # 0 0 0 0 30 40 0 60 30 0 100 0 30 25 20 20 60 50 30 80 50 40 0 20 60 30 20 80 60 50 70 100 45 60 0 25 100 0 0 110 30 40 110 60 30 100 90 0
     # -250 -300 0 -250 -150 200 -250 0 150 -250 200 0 -100 -175 100 -150 0 250 -100 100 250 -50 -300 100 50 -150 100 150 0 250 100 200 225 50 -300 125 250 -300 0 300 -150 200 300 0 150 250 150 0
 
-    def __init__(self, nome, pontosControle, precisao=None, bezier=True):
+    def __init__(self, nome, pontosControle, precisao=None, deltaS=None, deltaT=None, tamanho=None, bezier=True):
         self.__pontosControle = pontosControle
         self.__precisao = precisao if precisao else 0.1
-        segmentos  = self.calcularSegmentos(pontosControle, self.__precisao, bezier)
+        self.__deltaS = deltaS if deltaS else 0.1
+        self.__deltaT = deltaT if deltaT else 0.1
+        self.__linhas = 4
+        self.__colunas = 4
+        if tamanho and len(tamanho) == 2:
+            self.__linhas = tamanho[0]
+            self.__colunas = tamanho[1]
+        segmentos  = self.calcularSegmentos(pontosControle, bezier)
         super(SuperficieBicubica, self).__init__(nome, segmentos)
 
     # Retorna o tipo físico do objeto
@@ -25,11 +32,11 @@ class SuperficieBicubica(Objeto3D):
         return self.__precisao
 
     # Retorna uma lista de segmentos da superficie com base na precisao
-    def calcularSegmentos(self, pontosControle, delta, bezier):
+    def calcularSegmentos(self, pontosControle, bezier):
         if bezier:
-            return self.__calcBezier(pontosControle, delta)
+            return self.__calcBezier(pontosControle, self.__precisao)
         else:
-            return self.__calcSpline(pontosControle, delta, delta)
+            return self.__calcSpline(pontosControle, self.__deltaS, self.__deltaT)
 
     # Retorna uma lista de segmentos da superficie bicubica de bezier com base na precisao
     def __calcBezier(self, pontosControle, delta):
@@ -63,27 +70,38 @@ class SuperficieBicubica(Objeto3D):
                     prev = p
         return segmentos
 
+    # Monta os coeficientes nas matrizes
+    def __montarMatrizes(self, pontos, l, c):
+        Gx, Gy, Gz = [],[],[]
+        for i in range(4):
+            comecoLinha = (l+i)*self.__colunas + c
+            linhaGx = [p.X() for p in pontos][comecoLinha: comecoLinha+4]
+            linhaGy = [p.Y() for p in pontos][comecoLinha: comecoLinha+4]
+            linhaGz = [p.Z() for p in pontos][comecoLinha: comecoLinha+4]
+            Gx.append(linhaGx)
+            Gy.append(linhaGy)
+            Gz.append(linhaGz)
+        return Gx, Gy, Gz
+
     # Retorna uma lista de segmentos da superficie bicubica Spline com base na precisao
     def __calcSpline(self, pontosControle, deltaS, deltaT):
         segmentos = []
         M = self.__transformacaoSpline()
         MT = transpose(M)
-        for k in range(len(pontosControle)//16):
-            pontos = pontosControle[k*16: (k+1)*16]
-            Gx = [ [p.X() for p in pontos][i: i+4] for i in range(0, 16, 4) ]
-            Gy = [ [p.Y() for p in pontos][i: i+4] for i in range(0, 16, 4) ]
-            Gz = [ [p.Z() for p in pontos][i: i+4] for i in range(0, 16, 4) ]
-            #
-            Cx = self.__multmat([M, Gx, MT])
-            Cy = self.__multmat([M, Gy, MT])
-            Cz = self.__multmat([M, Gz, MT])
-            # crio as matrizes E
-            ns = int(1/deltaS)
-            nt = int(1/deltaT)
-            Eds = self.__matE(deltaS)
-            EdtT = transpose(self.__matE(deltaT))
-            # calculo as fwdDiffs
-            segmentos += self.__superficieFwdDiff(ns, nt, Cx, Cy, Cz, Eds, EdtT)
+        for l in range(self.__linhas-3):
+            for c in range(self.__colunas-3):
+                Gx, Gy, Gz = self.__montarMatrizes(pontosControle, l, c)
+                #
+                Cx = self.__multmat([M, Gx, MT])
+                Cy = self.__multmat([M, Gy, MT])
+                Cz = self.__multmat([M, Gz, MT])
+                # crio as matrizes E
+                ns = int(1/deltaS)
+                nt = int(1/deltaT)
+                Eds = self.__matE(deltaS)
+                EdtT = transpose(self.__matE(deltaT))
+                # calculo as fwdDiffs
+                segmentos += self.__superficieFwdDiff(ns, nt, Cx, Cy, Cz, Eds, EdtT)
         return segmentos
 
     # Retorna lista de segmentos da superficie de 16 pontos

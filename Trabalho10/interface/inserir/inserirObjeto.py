@@ -24,44 +24,38 @@ class InserirObjeto(QDialog):
         self.setWindowTitle("Inserir Objeto")
         self.setFixedSize(500, 230)
         self.__tipo = tipo
-        layout = QVBoxLayout()
-        self.setLayout(layout)
-        layout.addWidget(self.__nomeForma())
+        self.__layout = QVBoxLayout()
+        self.setLayout(self.__layout)
+        self.__layout.addWidget(self.__nomeForma())
         self.__sinalBotao = -1
         if self.__tipo == 0:
             mpol = MontarPoligono()
-            layout.addWidget(mpol)
+            self.__layout.addWidget(mpol)
             self.__coordenadas = mpol.coordenadas()
         elif self.__tipo == 1:
             mret = MontarReta();
-            layout.addWidget(mret)
+            self.__layout.addWidget(mret)
             self.__coordenadas = mret.coordenadas()
         elif self.__tipo == 2:
             mpon = MontarPonto()
-            layout.addWidget(mpon)
+            self.__layout.addWidget(mpon)
             self.__coordenadas = mpon.coordenadas()
         elif self.__tipo == 3:
             mcur = MontarPoligono()
-            layout.addWidget(mcur)
+            self.__layout.addWidget(mcur)
             self.__coordenadas = mcur.coordenadas()
         elif self.__tipo == 4:
             mspl = MontarPoligono()
-            layout.addWidget(mspl)
+            self.__layout.addWidget(mspl)
             self.__coordenadas = mspl.coordenadas()
         elif self.__tipo == 5:
             self.setFixedSize(500, 250)
             mpol3D = MontarPoligono()
-            layout.addWidget(mpol3D)
-            layout.addWidget(QLabel("A cada 3 coordenadas tem-se um ponto."))
+            self.__layout.addWidget(mpol3D)
+            self.__layout.addWidget(QLabel("A cada 3 coordenadas tem-se um ponto."))
             self.__coordenadas = mpol3D.coordenadas()
-        elif self.__tipo == 6:
-            self.setFixedSize(500, 380)
-            mspf3D = MontarSuperficie()
-            layout.addWidget(mspf3D)
-            layout.addWidget(QLabel("A cada 3 coordenadas tem-se um ponto."))
-            self.__coordenadas = mspf3D.coordenadas()
-            self.__precisao = mspf3D.precisao()
-        self.__botoes(layout)
+        if self.__tipo != 6:
+            self.__botoes(self.__layout)
 
     # Método par nomear o objeto
     def __nomeForma(self):
@@ -115,6 +109,20 @@ class InserirObjeto(QDialog):
 
     def setSuperficieBezier(self, bezier):
         self.__spfBezier = bezier
+        self.__inserirSuperficie()
+        self.__botoes(self.__layout)
+
+    def __inserirSuperficie(self):
+        if self.__spfBezier:
+            self.setFixedSize(500, 380)
+        else:
+            self.setFixedSize(500, 500)
+        mspf3D = MontarSuperficie(self.__spfBezier)
+        self.__layout.addWidget(mspf3D)
+        self.__layout.addWidget(QLabel("A cada 3 coordenadas tem-se um ponto."))
+        self.__coordenadas = mspf3D.coordenadas()
+        self.__precisao = mspf3D.precisao()
+        self.__tamanhoMatriz = mspf3D.tamanhoMatriz()
 
     def __definirObjetos3D(self, nome, tmpC, multiPontos):
         # pega os pontos do texto
@@ -128,13 +136,37 @@ class InserirObjeto(QDialog):
         if self.__tipo == 5:
             self.__objeto = ModeloArame(nome, pontos)
         elif self.__tipo == 6:
-            if len(pontos) % 16 != 0:
+            if self.__spfBezier:
+                tamanho = self.__tamanhoMatriz[0].text().split(' ')
+                linhas  = int(tamanho[0]) if tamanho[0] else 4
+                colunas = int(tamanho[1]) if tamanho[1] else 4
+                if linhas < 4 or colunas < 4 or linhas > 20 or colunas > 20:
+                    QMessageBox.question(self, 'Atenção', 'Tamanho de matriz invalida', QMessageBox.Ok)
+                    return
+                elif len(pontos) > linhas * colunas:
+                    QMessageBox.question(self, 'Atenção', 'Mais pontos do que o tamanho da matriz', QMessageBox.Ok)
+                    return
+                elif len(pontos) < linhas * colunas:
+                    QMessageBox.question(self, 'Atenção', 'Menos pontos do que o tamanho da matriz', QMessageBox.Ok)
+                    return
+            if len(pontos) < 16:
                 QMessageBox.question(self, 'Atenção', 'São necessários 16 pontos para formar cada superfície.', QMessageBox.Ok)
                 return
             else:
-                precisao = self.__precisao[0].text()
-                precisao = float(precisao) if precisao else None
-                self.__objeto = SuperficieBicubica(nome, pontos, precisao, self.__spfBezier)
+                precisao, deltaS, deltaT, tamanho = None, None, None, None
+                if self.__spfBezier:
+                    precisao = self.__precisao[0].text()
+                    precisao = float(precisao) if precisao else None
+                else:
+                    deltaS  = self.__precisao[0].text()
+                    deltaS  = float(deltaS) if deltaS else None
+                    deltaT  = self.__precisao[1].text()
+                    deltaT  = float(deltaT) if deltaT else None
+                    tamanho = self.__tamanhoMatriz[0].text().split(' ')
+                    linhas  = int(tamanho[0]) if tamanho[0] else 4
+                    colunas = int(tamanho[1]) if tamanho[1] else 4
+                    tamanho = [linhas, colunas]
+                self.__objeto = SuperficieBicubica(nome, pontos, precisao, deltaS, deltaT, tamanho, self.__spfBezier)
         self.__sinalBotao = 0
         self.hide()
 
