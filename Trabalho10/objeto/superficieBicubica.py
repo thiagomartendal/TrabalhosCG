@@ -6,11 +6,16 @@ class SuperficieBicubica(Objeto3D):
     # 0 0 0 0 30 40 0 60 30 0 100 0 30 25 20 20 60 50 30 80 50 40 0 20 60 30 20 80 60 50 70 100 45 60 0 25 100 0 0 110 30 40 110 60 30 100 90 0
     # -250 -300 0 -250 -150 200 -250 0 150 -250 200 0 -100 -175 100 -150 0 250 -100 100 250 -50 -300 100 50 -150 100 150 0 250 100 200 225 50 -300 125 250 -300 0 300 -150 200 300 0 150 250 150 0
 
-    def __init__(self, nome, pontosControle, precisao=None, deltaS=None, deltaT=None, bezier=True):
+    def __init__(self, nome, pontosControle, precisao=None, deltaS=None, deltaT=None, tamanho=None, bezier=True):
         self.__pontosControle = pontosControle
         self.__precisao = precisao if precisao else 0.1
         self.__deltaS = deltaS if deltaS else 0.1
         self.__deltaT = deltaT if deltaT else 0.1
+        self.__linhas = 4
+        self.__colunas = 4
+        if tamanho and len(tamanho) == 2:
+            self.__linhas = tamanho[0]
+            self.__colunas = tamanho[1]
         segmentos  = self.calcularSegmentos(pontosControle, bezier)
         super(SuperficieBicubica, self).__init__(nome, segmentos)
 
@@ -65,85 +70,38 @@ class SuperficieBicubica(Objeto3D):
                     prev = p
         return segmentos
 
-    # Define a dimensão da matriz
-    def __definirDimensao(self, qtdPontos):
-        if qtdPontos >= 1 and qtdPontos <= 16:
-            return 4
-        elif qtdPontos >= 17 and qtdPontos <= 25:
-            return 5
-        elif qtdPontos >= 26 and qtdPontos <= 36:
-            return 6
-        elif qtdPontos >= 37 and qtdPontos <= 49:
-            return 7
-        elif qtdPontos >= 50 and qtdPontos <= 64:
-            return 8
-        elif qtdPontos >= 65 and qtdPontos <= 81:
-            return 9
-        elif qtdPontos >= 82 and qtdPontos <= 100:
-            return 10
-        elif qtdPontos >= 101 and qtdPontos <= 121:
-            return 11
-        elif qtdPontos >= 122 and qtdPontos <= 144:
-            return 12
-        elif qtdPontos >= 145 and qtdPontos <= 169:
-            return 13
-        elif qtdPontos >= 170 and qtdPontos <= 196:
-            return 14
-        elif qtdPontos >= 197 and qtdPontos <= 225:
-            return 15
-        elif qtdPontos >= 226 and qtdPontos <= 256:
-            return 16
-        elif qtdPontos >= 257 and qtdPontos <= 289:
-            return 17
-        elif qtdPontos >= 290 and qtdPontos <= 324:
-            return 18
-        elif qtdPontos >= 325 and qtdPontos <= 361:
-            return 19
-        elif qtdPontos >= 362 and qtdPontos <= 400:
-            return 20
-        return -1
-
     # Monta os coeficientes nas matrizes
-    def __montarMatrizes(self, pontos):
-        n = self.__definirDimensao(len(pontos))
-        Gx = [[1 for x in range(n)] for y in range(n)]
-        Gy = [[1 for x in range(n)] for y in range(n)]
-        Gz = [[1 for x in range(n)] for y in range(n)]
-        k = 0
-        for i in range(n):
-            for j in range(n):
-                if k < len(pontos):
-                    Gx[i][j] = pontos[k].X()
-                    Gy[i][j] = pontos[k].Y()
-                    Gz[i][j] = pontos[k].Z()
-                    k += 1
+    def __montarMatrizes(self, pontos, l, c):
+        Gx, Gy, Gz = [],[],[]
+        for i in range(4):
+            comecoLinha = (l+i)*self.__colunas + c
+            linhaGx = [p.X() for p in pontos][comecoLinha: comecoLinha+4]
+            linhaGy = [p.Y() for p in pontos][comecoLinha: comecoLinha+4]
+            linhaGz = [p.Z() for p in pontos][comecoLinha: comecoLinha+4]
+            Gx.append(linhaGx)
+            Gy.append(linhaGy)
+            Gz.append(linhaGz)
         return Gx, Gy, Gz
 
     # Retorna uma lista de segmentos da superficie bicubica Spline com base na precisao
     def __calcSpline(self, pontosControle, deltaS, deltaT):
-        x, y, z = self.__montarMatrizes(pontosControle)
-        print('Gx:', x)
-        print('Gy:', y)
-        print('Gz:', z)
         segmentos = []
         M = self.__transformacaoSpline()
         MT = transpose(M)
-        for k in range(len(pontosControle)//16):
-            pontos = pontosControle[k*16: (k+1)*16]
-            Gx = [ [p.X() for p in pontos][i: i+4] for i in range(0, 16, 4) ]
-            Gy = [ [p.Y() for p in pontos][i: i+4] for i in range(0, 16, 4) ]
-            Gz = [ [p.Z() for p in pontos][i: i+4] for i in range(0, 16, 4) ]
-            #
-            Cx = self.__multmat([M, Gx, MT])
-            Cy = self.__multmat([M, Gy, MT])
-            Cz = self.__multmat([M, Gz, MT])
-            # crio as matrizes E
-            ns = int(1/deltaS)
-            nt = int(1/deltaT)
-            Eds = self.__matE(deltaS)
-            EdtT = transpose(self.__matE(deltaT))
-            # calculo as fwdDiffs
-            segmentos += self.__superficieFwdDiff(ns, nt, Cx, Cy, Cz, Eds, EdtT)
+        for l in range(self.__linhas-3):
+            for c in range(self.__colunas-3):
+                Gx, Gy, Gz = self.__montarMatrizes(pontosControle, l, c)
+                #
+                Cx = self.__multmat([M, Gx, MT])
+                Cy = self.__multmat([M, Gy, MT])
+                Cz = self.__multmat([M, Gz, MT])
+                # crio as matrizes E
+                ns = int(1/deltaS)
+                nt = int(1/deltaT)
+                Eds = self.__matE(deltaS)
+                EdtT = transpose(self.__matE(deltaT))
+                # calculo as fwdDiffs
+                segmentos += self.__superficieFwdDiff(ns, nt, Cx, Cy, Cz, Eds, EdtT)
         return segmentos
 
     # Retorna lista de segmentos da superficie de 16 pontos

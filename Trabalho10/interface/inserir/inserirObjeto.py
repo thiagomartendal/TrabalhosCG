@@ -117,13 +117,12 @@ class InserirObjeto(QDialog):
             self.setFixedSize(500, 380)
         else:
             self.setFixedSize(500, 500)
-        mspf3D = MontarSuperficie(not self.__spfBezier)
+        mspf3D = MontarSuperficie(self.__spfBezier)
         self.__layout.addWidget(mspf3D)
         self.__layout.addWidget(QLabel("A cada 3 coordenadas tem-se um ponto."))
         self.__coordenadas = mspf3D.coordenadas()
         self.__precisao = mspf3D.precisao()
-        self.__deltaS = mspf3D.deltaS()
-        self.__deltaT = mspf3D.deltaT()
+        self.__tamanhoMatriz = mspf3D.tamanhoMatriz()
 
     def __definirObjetos3D(self, nome, tmpC, multiPontos):
         # pega os pontos do texto
@@ -137,17 +136,37 @@ class InserirObjeto(QDialog):
         if self.__tipo == 5:
             self.__objeto = ModeloArame(nome, pontos)
         elif self.__tipo == 6:
+            if not self.__spfBezier:
+                tamanho = self.__tamanhoMatriz[0].text().split(' ')
+                linhas  = int(tamanho[0]) if tamanho[0] else 4
+                colunas = int(tamanho[1]) if tamanho[1] else 4
+                if linhas < 4 or colunas < 4 or linhas > 20 or colunas > 20:
+                    QMessageBox.question(self, 'Atenção', 'Tamanho de matriz invalida', QMessageBox.Ok)
+                    return
+                elif len(pontos) > linhas * colunas:
+                    QMessageBox.question(self, 'Atenção', 'Mais pontos do que o tamanho da matriz', QMessageBox.Ok)
+                    return
+                elif len(pontos) < linhas * colunas:
+                    QMessageBox.question(self, 'Atenção', 'Menos pontos do que o tamanho da matriz', QMessageBox.Ok)
+                    return
             if len(pontos) < 16:
                 QMessageBox.question(self, 'Atenção', 'São necessários 16 pontos para formar cada superfície.', QMessageBox.Ok)
                 return
             else:
-                precisao = self.__precisao[0].text()
-                precisao = float(precisao) if precisao else None
-                deltaS = self.__deltaS[0].text()
-                deltaS = float(deltaS) if deltaS else None
-                deltaT = self.__deltaT[0].text()
-                deltaT = float(deltaT) if deltaT else None
-                self.__objeto = SuperficieBicubica(nome, pontos, precisao, deltaS, deltaT, self.__spfBezier)
+                precisao, deltaS, deltaT, tamanho = None, None, None, None
+                if self.__spfBezier:
+                    precisao = self.__precisao[0].text()
+                    precisao = float(precisao) if precisao else None
+                else:
+                    deltaS  = self.__precisao[0].text()
+                    deltaS  = float(deltaS) if deltaS else None
+                    deltaT  = self.__precisao[1].text()
+                    deltaT  = float(deltaT) if deltaT else None
+                    tamanho = self.__tamanhoMatriz[0].text().split(' ')
+                    linhas  = int(tamanho[0]) if tamanho[0] else 4
+                    colunas = int(tamanho[1]) if tamanho[1] else 4
+                    tamanho = [linhas, colunas]
+                self.__objeto = SuperficieBicubica(nome, pontos, precisao, deltaS, deltaT, tamanho, self.__spfBezier)
         self.__sinalBotao = 0
         self.hide()
 
