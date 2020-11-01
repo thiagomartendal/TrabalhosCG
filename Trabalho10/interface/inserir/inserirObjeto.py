@@ -136,7 +136,7 @@ class InserirObjeto(QDialog):
         if self.__tipo == 5:
             self.__objeto = ModeloArame(nome, pontos)
         elif self.__tipo == 6:
-            if self.__spfBezier:
+            if not self.__spfBezier:
                 tamanho = self.__tamanhoMatriz[0].text().split(' ')
                 linhas  = int(tamanho[0]) if tamanho[0] else 4
                 colunas = int(tamanho[1]) if tamanho[1] else 4
